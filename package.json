@@ -1,0 +1,85 @@
+{
+    "name": "web-setup-react-mui",
+    "version": "0.1.0",
+    "private": true,
+    "homepage": "./",
+    "dependencies": {
+        "@emotion/react": "^11.11.4",
+        "@emotion/styled": "^11.11.5",
+        "@mui/lab": "^5.0.0-alpha.170",
+        "@mui/material": "^5.15.19",
+        "@mui/x-charts": "^7.6.2",
+        "@mui/x-date-pickers": "^7.6.1",
+        "@reduxjs/toolkit": "^2.2.5",
+        "@tabler/icons-react": "^3.5.0",
+        "@types/crypto-js": "^4.2.2",
+        "@types/react": "^18.3.3",
+        "@types/react-dom": "^18.3.0",
+        "@vis.gl/react-google-maps": "^1.1.0",
+        "axios": "^1.7.7",
+        "crypto-js": "^4.2.0",
+        "dayjs": "^1.11.13",
+        "env-cmd": "^10.1.0",
+        "formik": "^2.4.6",
+        "framer-motion": "^11.2.10",
+        "highcharts": "^11.4.8",
+        "highcharts-react-official": "^3.2.1",
+        "i18next": "^23.11.5",
+        "i18next-browser-languagedetector": "^8.0.0",
+        "jwt-decode": "^4.0.0",
+        "mqtt": "^5.10.1",
+        "ol": "^10.0.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-helmet": "^6.1.0",
+        "react-i18next": "^14.1.2",
+        "react-intl": "^6.6.8",
+        "react-perfect-scrollbar": "^1.5.8",
+        "react-photo-view": "^1.2.6",
+        "react-redux": "^9.1.2",
+        "react-router-dom": "^6.23.1",
+        "react-scripts": "^5.0.1",
+        "react-simple-image-viewer": "^1.2.2",
+        "react-slick": "^0.30.2",
+        "react-toastify": "^10.0.5",
+        "slick-carousel": "^1.8.1",
+        "yup": "^1.4.0"
+    },
+    "scripts": {
+        "start": "env-cmd -f .env.development react-scripts start",
+        "build": "env-cmd -f .env.production react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "react-app/jest"
+        ],
+        "rules": {
+            "react-hooks/exhaustive-deps": "off",
+            "eqeqeq": "off"
+        }
+    },
+    "babel": {
+        "presets": [
+            "@babel/preset-react"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "sass": "^1.77.4",
+        "web-vitals": "^4.0.1"
+    }
+}
