@@ -9,13 +9,17 @@ import { useEffect, useState } from "react";
 import useObservation from "../../../../hooks/useObservation";
 import useSensor from "../../../../hooks/useSensor";
 import CustomHighChart from "../../../../components/chart";
+import { useParams } from "react-router-dom";
+import useStation from "../../../../hooks/useStation";
 
 
 function SensorTab({ dataStreamId }) {
     const theme = useTheme()
     const { borderRadius } = useConfig()
     const { sensors } = useSensor()
-    const { observation, observationLatest,isViewChart } = useObservation(dataStreamId)
+    const { stations } = useStation()
+    const { id } = useParams()
+    const { observation, observationLatest, isViewChart } = useObservation(dataStreamId, stations?.find(item => item?.id === Number(id)))
 
     const transformedData = observation?.observations?.map(item => {
         return [
@@ -23,10 +27,11 @@ function SensorTab({ dataStreamId }) {
             parseFloat(item.result.trim()) // Chuyển đổi kết quả sang số
         ];
     });
+    console.log("tr", observation);
 
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}>
                 <CsPaperCenter >
                     <CsFlexAlwaysBetween
                         sx={{
@@ -50,9 +55,9 @@ function SensorTab({ dataStreamId }) {
                     }
                 </CsPaperCenter>
             </Grid>
-            <Grid item xs={12} md={9}>
+            <Grid item xs={12} md={8}>
                 <CsPaperCenter >
-                    {isViewChart ===true ?
+                    {isViewChart === true ?
                         <CsFlexAlwaysBetween width={"100%"} >
                             <div style={{ width: '100%', height: '550px' }}>
                                 <CustomHighChart data={transformedData} />

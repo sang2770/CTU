@@ -55,7 +55,7 @@ export default function TypeSensorTabs() {
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
-
+    console.log("tr",station);
 
     return (
         <Box sx={{ width: '100%' }}>

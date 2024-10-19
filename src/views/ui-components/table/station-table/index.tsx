@@ -26,7 +26,7 @@ import useSensor from "../../../../hooks/useSensor";
 
 function createData(
   id: number,
-  code: string,
+  code: number,
   name: string,
   address: string,
   camera: string,
@@ -74,9 +74,9 @@ function CustomStationTable({ isAdmin }: TableProps) {
   const { t } = useTranslation();
   const { borderRadius } = useConfig()
   const navigate = useNavigate();
-
-  const { observations, observationsLatest, isLoadingObservation } = useObservation()
   const { stations, isLoadingStations } = useStation()
+  const { observations,observationsData, isLoadingObservation } = useObservation()
+
   const { things, isLoadingThings } = useThings()
   const {sensors}=useSensor()
 
@@ -90,16 +90,17 @@ function CustomStationTable({ isAdmin }: TableProps) {
   const [isOpenDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [updateId, setUpdateId] = useState(0)
   const [deleteId, setDeleteId] = useState(0)
+console.log("observation-1",observationsData);
 
   const getStationNameById = (id) => {
     return stations?.find(item => item?.id === id)?.name
   };
 
   const rows = useMemo(() => {
-    return observationsLatest?.map((observation, index) => {
+    return observationsData?.map((observation, index) => {
       return createData(
         index + 1,
-        "",
+        things?.find(item => item?.historicalStations?.find(stationOfThing => stationOfThing?.stationId === observation?.stationId))?.thingId,
         observation?.stationName,
         things?.find(item => item?.historicalStations?.find(stationOfThing => stationOfThing?.stationId === observation?.stationId))?.nameThing,
         "",
@@ -107,7 +108,7 @@ function CustomStationTable({ isAdmin }: TableProps) {
         "date"// Nếu có trường dateTime
       );
     });
-  }, [observationsLatest]);
+  }, [observationsData]);
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
@@ -272,7 +273,7 @@ function CustomStationTable({ isAdmin }: TableProps) {
                               <CsFlexAlwaysCenter gap={1}>
                                 <Tooltip title="Chi tiết">
                                   <Avatar
-                                    onClick={() => { navigate(`/station/${row.id}`)}}
+                                    onClick={() => { navigate(`/thing/${row.code}/station/${row.id}`)}}
                                     variant="rounded"
                                     sx={{
                                       border: '1px solid',
