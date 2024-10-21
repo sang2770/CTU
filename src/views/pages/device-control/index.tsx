@@ -6,6 +6,9 @@ import useMQTTSubscribe from "../../../hooks/useMQTTSubscribe";
 import useDevice from "../../../hooks/useDevice";
 import { CsFlexAlwaysBetween, CsFlexAlwayStart } from "../../../components/flex";
 import { CsPaperCenter } from "../../../components/paper";
+import useThings from "../../../hooks/useThings";
+import useStation from "../../../hooks/useStation";
+import useObservation from "../../../hooks/useObservation";
 
 // import useObservation from "../../../hooks/useObservation";
 // import useStation from "../../../hooks/useStation";
@@ -15,6 +18,10 @@ function FarmPage() {
     const [currentPond, setCurrentPond] = useState(1);  // Mặc định là ao 1
     const theme = useTheme();
     const { dataFromBE, fetchData, changeStatus, changeStatusAuto, isLoadingStatus, isLoadingStatusAuto, updateConfiguration, showSettings, toggleSettings, messageDevice } = useDevice();
+
+    const { station } = useStation(1)
+    const { observationLatest } = useObservation(null, station)
+    const waterLevel = observationLatest?.observations?.find(item => item?.dataStreamId == currentPond)?.result
 
     // Sử dụng một đối tượng để lưu trữ cấu hình cho từng ao
     const [configurationValue, setConfigurationValue] = useState({
@@ -41,7 +48,8 @@ function FarmPage() {
     // }, [dataFromBE, currentPond]);
     useEffect(() => {
         // Khi `dataFromBE` hoặc `currentPond` thay đổi, cập nhật lại configurationValue cho ao hiện tại
-        const pondData = dataFromBE?.find(item => item.id === currentPond)?.autoConfig;
+        const pondData = dataFromBE?.find(item => item.id === getValveIds().inputValveId)?.autoConfig;
+        console.log("pondData", currentPond, pondData);
 
         if (pondData) {
             setConfigurationValue(prev => ({
@@ -254,7 +262,7 @@ function FarmPage() {
                                 Cài đặt thông số bể nuôi
                             </Typography>
                             <CsFlexAlwayStart>
-                                <Typography variant="body1" color={theme.palette.text.secondary}>Mực nước:</Typography>
+                                <Typography variant="body1" color={theme.palette.text.secondary}>Mực nước: {waterLevel}</Typography>
                             </CsFlexAlwayStart>
                             <CsFlexAlwayStart>
                                 <Typography variant="body1" color={theme.palette.text.secondary}>
