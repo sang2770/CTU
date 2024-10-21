@@ -63,7 +63,7 @@ const dashboardAdmin = [
                 id: 'farm',
                 title: "Trang trại",
                 type: 'item',
-                url: '/farm-information',
+                url: '/farm',
                 icon: <IconShape stroke={1.5} />,
                 breadcrumbs: true,
             },
@@ -123,7 +123,7 @@ const dashboardAdmin = [
                         icon: <IconAdjustments stroke={1.5} />,
                         breadcrumbs: true,
                     },
-                    
+
                 ]
             }
 

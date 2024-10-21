@@ -6,8 +6,9 @@ import DashboardLayout from '../components/layout/DashboardLayout';
 import DashboardPage from '../views/pages/dashboard';
 import BlankLayout from '../components/layout/BlankLayout';
 
+const FarmPage = Loadable(lazy(() => import("../views/pages/farm/FarmPage")));
+const PondPage = Loadable(lazy(() => import("../views/pages/farm/PondPage")));
 const DeviceControlPage = Loadable(lazy(() => import("../views/pages/device-control")));
-const FarmPage = Loadable(lazy(() => import("../views/pages/device-control")));
 const AboutPage = Loadable(lazy(() => import("../views/pages/about")));
 const StationPage = Loadable(lazy(() => import("../views/pages/station")));
 const LoginPage = Loadable(lazy(() => import("../views/pages/login")));
@@ -43,6 +44,7 @@ export default function Routes() {
         {/* Logined */}
         <Route path="/device-control" element={<DeviceControlPage />} />
         <Route path="/farm" element={<FarmPage />} />
+        <Route path="/farm/pond" element={<PondPage />} />
 
         {/* Logined admin*/}
         <Route path="/farm-management" element={<FarmManagementPage />} />
