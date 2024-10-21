@@ -1,16 +1,13 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import { IconX } from '@tabler/icons-react';
-import { TransitionProps } from '@mui/material/transitions';
 import { Slide } from '@mui/material';
-
+import { styled } from '@mui/material/styles';
+import { TransitionProps } from '@mui/material/transitions';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -22,7 +19,6 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
   },
@@ -30,6 +26,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
+
 interface DialogProps {
   title: string,
   open: boolean,

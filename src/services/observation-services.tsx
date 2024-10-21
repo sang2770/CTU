@@ -12,7 +12,8 @@ const RYNAN_URL = "https://api-mekong.rynangate.com/api/v1/"
 
 export const getObservationsById = (sensorId) => observationApiV2.get(`/dataStreamId/${sensorId}`)
 export const getObservationsByRange = (sensorId, startTime,endTime) => observationApiV2.get(`/dataStreamId/${sensorId}/byRange?startTime=${startTime}&endTime=${endTime}`)
-export const getObservationsByIdLatest = (sensorId) => observationApiV2.get(`/dataStreamId/${sensorId}/latest`)
+// export const getObservationsByIdLatest = (sensorId) => observationApiV2.get(`/dataStreamId/${sensorId}/latest`)
+export const getObservationsByIdLatest = (sensorIds) => observationApiV2.post(`/dataStreamIds/latest`, sensorIds)
 
 export default {
     //Rynan

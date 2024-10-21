@@ -1,21 +1,31 @@
 import { Grid, Typography, useTheme } from "@mui/material";
+import { useParams } from "react-router-dom";
+
+import { convertTimeFromString, convertTimeStampFromString } from "../../../../utils/formatTime";
+import { CsBoxCenter } from "../../../../components/box";
 import { CsFlexAlwaysBetween, CsFlexAlwayStart } from "../../../../components/flex";
 import { CsPaperCenter } from "../../../../components/paper";
-import { CsBoxCenter } from "../../../../components/box";
-import { convertTimeFromString, convertTimeStampFromString } from "../../../../utils/formatTime";
-import useConfig from "../../../../hooks/useConfig";
-import { useEffect, useState } from "react";
-
-import useObservation from "../../../../hooks/useObservation";
-import useSensor from "../../../../hooks/useSensor";
 import CustomHighChart from "../../../../components/chart";
+import useConfig from "../../../../hooks/useConfig";
+import useObservation from "../../../../hooks/useObservation";
+
+import useStation from "../../../../hooks/useStation";
+import { useState } from "react";
+import dayjs from "dayjs";
 
 
 function SensorTab({ dataStreamId }) {
     const theme = useTheme()
+    const { id } = useParams()
     const { borderRadius } = useConfig()
-    const { sensors } = useSensor()
-    const { observation, observationLatest,isViewChart } = useObservation(dataStreamId)
+    const { stations } = useStation()
+
+    const range = {
+        startTime: dayjs().subtract(7, 'day'),
+        endTime: dayjs(new Date()),
+    }
+    const stationById = stations?.find(item => item?.id === Number(id))
+    const { observation, isViewChart } = useObservation(dataStreamId, stationById, range)
 
     const transformedData = observation?.observations?.map(item => {
         return [
@@ -26,33 +36,9 @@ function SensorTab({ dataStreamId }) {
 
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12}>
                 <CsPaperCenter >
-                    <CsFlexAlwaysBetween
-                        sx={{
-                            background: theme.palette.mode == "dark" ? theme.palette.background.default : theme.palette.grey[100],
-                            borderTopLeftRadius: `${borderRadius}px`,
-                            borderTopRightRadius: `${borderRadius}px`,
-                            borderBottom: `1px solid ${theme.palette.mode == "dark" ? theme.palette.grey[800] : theme.palette.grey[300]}`
-                        }}>
-                        <CsBoxCenter py={2} width={"100%"}>
-                            <Typography variant="body1" fontWeight={600}>Cập nhật gần nhất</Typography>
-                        </CsBoxCenter>
-                    </CsFlexAlwaysBetween>
-                    {
-                        observationLatest?.observations?.map(item => (
-                            <CsFlexAlwayStart pt={2} pb={1} px={2} width={"100%"} gap={1}>
-                                <Typography minWidth={"160px"} variant="body1" >{item?.name}</Typography>
-                                <Typography variant="body1" fontWeight={600}>{item?.result}</Typography>
-
-                            </CsFlexAlwayStart>
-                        ))
-                    }
-                </CsPaperCenter>
-            </Grid>
-            <Grid item xs={12} md={9}>
-                <CsPaperCenter >
-                    {isViewChart ===true ?
+                    {isViewChart === true ?
                         <CsFlexAlwaysBetween width={"100%"} >
                             <div style={{ width: '100%', height: '550px' }}>
                                 <CustomHighChart data={transformedData} />

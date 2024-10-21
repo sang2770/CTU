@@ -1,12 +1,12 @@
-import { Box, IconButton, Tooltip, Typography, alpha, useTheme } from "@mui/material";
-import { EnhancedTableToolbarProps } from "./type";
+import { Box, IconButton, Tooltip, Typography, alpha } from "@mui/material";
 import { IconTrash } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
+
+import { EnhancedTableToolbarProps } from "./type";
 import useConfig from "../../hooks/useConfig";
 
 export function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     const { numSelected } = props;
-    const theme = useTheme()
     const { t } = useTranslation()
     const { borderRadius } = useConfig()
 
@@ -30,11 +30,9 @@ export function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             {numSelected > 0 ? (
                 <Typography
                     sx={{ flex: '1 1 100%' }}
-                    // color="inherit"
                     variant="subtitle2"
-                // component="div"
                 >
-                    {numSelected} được chọn
+                    {numSelected} {t("được chọn")}
                 </Typography>
             ) : null}
             {numSelected > 0 && (

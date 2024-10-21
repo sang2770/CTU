@@ -3,7 +3,8 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Avatar, Box, Button, Checkbox, Divider, FormControl, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Stack, Table, TableBody, TableContainer, Tooltip, Typography, useTheme } from "@mui/material";
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconEye, IconPencil, IconReport, IconTrash, IconVideo } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconEye, IconPencil, IconTrash, IconVideo } from "@tabler/icons-react";
+
 import { ContainerTable, StyledTableCell, StyledTableRow } from "../../../../components/table/style";
 import { convertTimeFromString } from "../../../../utils/formatTime";
 import { CsFlexAlwaysBetween, CsFlexAlwaysCenter } from "../../../../components/flex";
@@ -13,20 +14,19 @@ import { EnhancedTableToolbar } from "../../../../components/table/TableToolBar"
 import { getComparator, stableSort } from "../../../../utils/table";
 import { HeadCell, Order } from "../station-table/table";
 import { ROWSPERPAGE } from "../../../../constant/customize";
+import { SearchAndFilter } from "./TableSearchAndFilter";
 import CustomInput from "../../../../components/input/CustomInput";
 import CustomizedDialogs from "../../../../components/dialog";
+import FormStation from "../../forms/FormStation";
 import Nodata from "../../../../components/nodata";
 import useConfig from "../../../../hooks/useConfig";
+import useObservation from "../../../../hooks/useObservation";
 import useStation from "../../../../hooks/useStation";
 import useThings from "../../../../hooks/useThings";
-import { SearchAndFilter } from "./TableSearchAndFilter";
-import FormStation from "../../forms/FormStation";
-import useObservation from "../../../../hooks/useObservation";
-import useSensor from "../../../../hooks/useSensor";
 
 function createData(
   id: number,
-  code: string,
+  code: number,
   name: string,
   address: string,
   camera: string,
@@ -74,18 +74,15 @@ function CustomStationTable({ isAdmin }: TableProps) {
   const { t } = useTranslation();
   const { borderRadius } = useConfig()
   const navigate = useNavigate();
-
-  const { observations, observationsLatest, isLoadingObservation } = useObservation()
   const { stations, isLoadingStations } = useStation()
+  const { observationsLatest, isLoadingObservation } = useObservation()
   const { things, isLoadingThings } = useThings()
-  const {sensors}=useSensor()
 
   const [page, setPage] = useState(1);
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof DataStation>("id");
   const [selected, setSelected] = useState<readonly number[]>([]);
   const [rowsPerPage, setRowsPerPage] = useState(ROWSPERPAGE);
-
   const [isOpenUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
   const [isOpenDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [updateId, setUpdateId] = useState(0)
@@ -99,12 +96,12 @@ function CustomStationTable({ isAdmin }: TableProps) {
     return observationsLatest?.map((observation, index) => {
       return createData(
         index + 1,
-        "",
+        things?.find(item => item?.historicalStations?.find(stationOfThing => stationOfThing?.stationId === observation?.stationId))?.thingId,
         observation?.stationName,
         things?.find(item => item?.historicalStations?.find(stationOfThing => stationOfThing?.stationId === observation?.stationId))?.nameThing,
         "",
         observation?.observations,
-        "date"// Nếu có trường dateTime
+        "date"
       );
     });
   }, [observationsLatest]);
@@ -245,34 +242,54 @@ function CustomStationTable({ isAdmin }: TableProps) {
                               scope="row"
                             >
                               <Typography variant="subtitle2">{row?.name || "-"}</Typography>
-                              <Typography fontWeight={"inherit"} variant="body2">{row?.address || "-"}</Typography>
+                              <Typography fontWeight={"inherit"} variant="body2">{row?.address || "Chưa gắn vào ao/ruộng"}</Typography>
                             </StyledTableCell>
                             <StyledTableCell align="left" padding="none">
-                              {row?.sensors?.map((item) =>
+                              {row?.sensors.length > 0 ?
+                                row?.sensors?.map((item) =>
+                                  <>
+                                    <CsFlexAlwaysBetween>
+                                      <Typography fontWeight={"inherit"} px={2} py={1}>{item?.dataStreamId }-{item?.name || "-"}</Typography>
+                                      <Typography fontWeight={600} px={2} py={1}>{item?.result || "-"}</Typography>
+                                    </CsFlexAlwaysBetween>
+                                    {row?.sensors.length > 1 && <Divider />}
+                                  </>
+                                )
+                                :
                                 <>
                                   <CsFlexAlwaysBetween>
-                                    <Typography fontWeight={"inherit"} px={2} py={1}>{item?.name || "-"}</Typography>
-                                    <Typography fontWeight={600} px={2} py={1}>{item?.result || "-"}</Typography>
+                                    <Typography fontWeight={"inherit"} px={2} py={1}>{"Chưa có dữ liệu"}</Typography>
+
                                   </CsFlexAlwaysBetween>
                                   {row?.sensors.length > 1 && <Divider />}
                                 </>
-                              )}
+                              }
                             </StyledTableCell>
                             <StyledTableCell align="left" padding="none">
-                              {row?.sensors?.map((item) =>
+                              {row?.sensors.length > 0 ?
+                                row?.sensors?.map((item) =>
+                                  <>
+                                    <CsFlexAlwaysBetween>
+                                      <Typography fontWeight={"inherit"} px={2} py={1}>{convertTimeFromString(item?.resultTime) || "-"}</Typography>
+                                    </CsFlexAlwaysBetween>
+                                    {row?.sensors.length > 1 && <Divider />}
+                                  </>
+                                )
+                                :
                                 <>
                                   <CsFlexAlwaysBetween>
-                                    <Typography fontWeight={600} px={2} py={1}>{convertTimeFromString(item?.resultTime) || "-"}</Typography>
+                                    <Typography fontWeight={"inherit"} px={2} py={1}>{"Chưa có dữ liệu"}</Typography>
+
                                   </CsFlexAlwaysBetween>
                                   {row?.sensors.length > 1 && <Divider />}
                                 </>
-                              )}
+                              }
                             </StyledTableCell>
                             <StyledTableCell align="center">
                               <CsFlexAlwaysCenter gap={1}>
                                 <Tooltip title="Chi tiết">
                                   <Avatar
-                                    onClick={() => { navigate(`/station/${row.id}`)}}
+                                    onClick={() => { navigate(`/thing/${row.code}/station/${row.id}`) }}
                                     variant="rounded"
                                     sx={{
                                       border: '1px solid',
@@ -439,11 +456,11 @@ function CustomStationTable({ isAdmin }: TableProps) {
       </ContainerTable>
       {/* Dialog */}
       <CustomizedDialogs
-      
+
         title={getStationNameById(updateId)}
         open={isOpenUpdateDialog}
         handleOpen={setOpenUpdateDialog}
-        body={<FormStation/>}
+        body={<FormStation />}
       />
       <CustomizedDialogs
         title={getStationNameById(deleteId)}

@@ -3,15 +3,13 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, FormHelperText, Grid, IconButton, InputAdornment } from '@mui/material';
+import { Box, Button, FormHelperText, Grid } from '@mui/material';
 import { Formik } from 'formik';
-import { IconEye, IconEyeOff, IconLock, IconUser } from '@tabler/icons-react';
+import { IconLock, IconUser } from '@tabler/icons-react';
 import * as CryptoJS from 'crypto-js'
 
-import { CsBoxCenter } from '../../../components/box';
 import { CsFlexBetween } from '../../../components/flex';
 import { MuiEffectButton } from '../../../components/button';
-import FormikCustomInput from '../../../components/input/FormikCustomInputBlur';
 import useAuth from '../../../hooks/useAuth';
 import useScriptRef from '../../../hooks/useScriptRef';
 import FormikCustomInputBlur from '../../../components/input/FormikCustomInputBlur';
@@ -27,7 +25,6 @@ const FormLogin = ({ ...others }) => {
     // useState
     const [loginCount, setLoginCount] = useState(0);
     const [isCountdown, setCountdown] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
     const [timeLeft, setTimeLeft] = useState(30);
 
     const secretKey: string = process.env.TOKEN_AUTH || 'oda_dev'
@@ -49,9 +46,7 @@ const FormLogin = ({ ...others }) => {
             setTimeLeft(prevTime => timeLeft - 1);
             localStorage.setItem('timeCountdown', timeLeft.toString());
         }, 1000);
-
         return () => clearInterval(timer);
-
     }, [timeLeft]);
 
     const onSubmit = async (values: any, { setErrors, setStatus, setSubmitting, resetForm }: any) => {
@@ -59,7 +54,6 @@ const FormLogin = ({ ...others }) => {
             const loginRequest = {
                 username: values.username,
                 password: CryptoJS.AES.encrypt(values.password || '', secretKey).toString()
-                // password:values.password
             }
             const rs = await login(loginRequest);
 
@@ -72,7 +66,6 @@ const FormLogin = ({ ...others }) => {
                 setSubmitting(false);
             }
         } catch (err: any) {
-            // const errMessage = err && t("Tài khoản hoặc mật khẩu không đúng")
             const errMessage = err
             if (scriptedRef.current) {
                 setStatus({ success: false });
@@ -80,14 +73,6 @@ const FormLogin = ({ ...others }) => {
                 setSubmitting(false);
             }
         }
-    };
-
-    const handleClickShowPassword = () => {
-        setShowPassword(!showPassword);
-    };
-
-    const handleMouseDownPassword = (event: React.MouseEvent) => {
-        event.preventDefault()!;
     };
 
     const handleLogin = () => {
@@ -134,9 +119,7 @@ const FormLogin = ({ ...others }) => {
                         </Grid>
                         <Grid item xs={12} sm={12}>
                             <FormikCustomInputBlur
-                            
                                 name="password"
-                                type={showPassword ? 'text' : 'password'}
                                 label={"Password"}
                                 value={values.password}
                                 onChange={(e) => setFieldValue("password", e.target.value)}
@@ -148,7 +131,6 @@ const FormLogin = ({ ...others }) => {
                                         <IconLock color={theme.palette.text.secondary} />
                                     </div>
                                 }
-                               
                             />
                         </Grid>
                     </Grid>
@@ -163,7 +145,6 @@ const FormLogin = ({ ...others }) => {
                     <Box sx={{ mt: 3 }}>
                         {!isCountdown ?
                             <CsFlexBetween>
-                                {/* <a href="/" className=''>{t("Quay lại trang chủ")}</a> */}
                                 <MuiEffectButton
                                     variant="contained"
                                     sx={{ backgroundColor: theme.palette.primary.main, boxShadow: 0, textTransform: "uppercase", p: "12px" }}

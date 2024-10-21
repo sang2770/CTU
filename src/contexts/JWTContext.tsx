@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }: any) => {
     const { t } = useTranslation()
 
     const [accessToken, setAccesstoken] = useState<any>(localStorage.getItem('accessToken'))
-    const [dataUser, setDataUser] = useState<any>(localStorage.getItem('_authenticatedUser'))
 
     useEffect(() => {
         const init = async () => {
@@ -35,7 +34,6 @@ export const AuthProvider = ({ children }: any) => {
                 const data = JSON.parse(localStorage.getItem('_authenticatedUser'))
 
                 setAccesstoken(token)
-                setDataUser(data)
 
                 if (accessToken) setSession(accessToken, JSON.stringify(data))
                 // else if (pathname !== '/login') logout();
@@ -49,7 +47,6 @@ export const AuthProvider = ({ children }: any) => {
     const login = async (loginRequest: any) => {
         try {
             const response = await loginAuth(loginRequest)
-            setDataUser(response.data?.data)
             setAccesstoken(response.data.accessToken)
             if (response.status === 200 && response.data?.data?.accessToken && response.data?.data) {
                 setSession(response.data?.data?.accessToken, JSON.stringify(response.data?.data))

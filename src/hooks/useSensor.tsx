@@ -17,6 +17,8 @@ function useSensor(sensorId?: number) {
                 setAuthApiHeader()
                 const response = await getAllSensors()
                 dispath(SENSOR_GET_ALL({ sensors: response?.data }))
+                console.log("sensor",response?.data);
+                
             } catch (error) {
                 console.error("Error fetching data:", error)
             } finally {

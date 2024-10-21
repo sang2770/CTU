@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Routes from './routes';
 import ThemeCustomization from './themes';
 
-import { BrowserRouter as Router, Routes as RouterRoutes, Route, Link, useParams } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const App = () => {
     const theme = useTheme()

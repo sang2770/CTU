@@ -17,6 +17,8 @@ function useThings() {
                 setAuthApiHeader()
                 const response = await getAllThings()
                 dispath(THINGS_GET_ALL({ things: response?.data }));
+                console.log("things",response?.data);
+                
             } catch (error) {
                 console.error("Error fetching data:", error)
             } finally {

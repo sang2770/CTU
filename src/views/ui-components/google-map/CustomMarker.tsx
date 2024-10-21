@@ -1,4 +1,4 @@
-import { AdvancedMarker, InfoWindow, Marker, useAdvancedMarkerRef, useMarkerRef } from "@vis.gl/react-google-maps"
+import { InfoWindow, Marker, useMarkerRef } from "@vis.gl/react-google-maps"
 import React, { useEffect, useState } from "react"
 
 const CustomMarker = ({ position, content, type, icon }) => {
@@ -13,7 +13,6 @@ const CustomMarker = ({ position, content, type, icon }) => {
 
   // Kiểm tra giá trị position trước khi render
   if (!position || typeof position?.latitude !== 'number' || typeof position?.longitude !== 'number') {
-    console.error("Invalid position object:", position);
     return null; // Không render nếu position không hợp lệ
   }
 
@@ -45,7 +44,6 @@ const CustomMarker = ({ position, content, type, icon }) => {
         {content}
       </InfoWindow>
     }
-
   </>
 }
 

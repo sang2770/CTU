@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit'
-import { Observation, ObservationHistory } from './reducer'
+import { Observation } from './reducer'
 
 export const OBSERVATIONS_LATEST_GET_ALL = createAction<{ observationsLatest:Observation[]  }>('@observation/GET_LATEST')
 export const OBSERVATION_LATEST_BY_ID = createAction<{ observationLatest:Observation  }>('@observation/GET_LATEST_BY_ID')

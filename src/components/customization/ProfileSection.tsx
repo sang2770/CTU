@@ -1,19 +1,17 @@
-import { Avatar, Button, Menu, MenuItem, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { CsAlwayFlexEnd } from "../flex";
+import { Avatar, Button, Menu, MenuItem, Typography, useTheme } from "@mui/material";
 import { IconUser } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import useAuth from "../../hooks/useAuth";
-import { useAppDispatch, useAppSelector } from "../../store/hook";
-import useConfig from "../../hooks/useConfig";
 import { useTranslation } from "react-i18next";
+
+import { CsAlwayFlexEnd } from "../flex";
+import useAuth from "../../hooks/useAuth";
+import useConfig from "../../hooks/useConfig";
+
 
 function ProfileSection() {
     const { borderRadius } = useConfig()
-    const { drawerOpen } = useAppSelector((state) => state.menu)
     const { t } = useTranslation()
     const theme = useTheme()
-    const dispatch = useAppDispatch()
-    const matchUpMd = useMediaQuery(theme.breakpoints.up("md"));
 
     const { isAuthenticated, logout } = useAuth()
 
@@ -49,7 +47,6 @@ function ProfileSection() {
                     <Typography variant="body2" color={theme.palette.mode === "dark" ? theme.palette.text.secondary : theme.palette.primary.main}>{dataUser?.fullName}</Typography>
                     <Avatar
                         sx={{
-                            // boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 12px",
                             cursor: "pointer",
                             borderColor: theme.palette.mode === 'dark' ? theme.palette.primary.main : theme.palette.primary.light,
                             background: theme.palette.mode === 'dark' ? theme.palette.primary.dark : theme.palette.primary.main,
@@ -64,8 +61,8 @@ function ProfileSection() {
                             borderTopLeftRadius: 0,
                             borderBottomLeftRadius: 0,
                         }}
-                        onClick={handleOpenUserMenu} variant="rounded">
-
+                        onClick={handleOpenUserMenu} variant="rounded"
+                    >
                         <IconUser />
                     </Avatar>
                 </CsAlwayFlexEnd>

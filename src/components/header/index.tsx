@@ -1,39 +1,21 @@
-import { AppBar, Avatar, Box, Button, Grid, Menu, MenuItem, Toolbar, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { AppBar, Avatar, Box, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { IconMenu2 } from "@tabler/icons-react";
+
 import { HEADER_HEIGHT } from "../../constant/customize";
-import { IconMenu2, IconUser } from "@tabler/icons-react";
 import { OPEN_DRWAWER } from "../../store/menu/action";
 import { useAppDispatch, useAppSelector } from "../../store/hook";
-import { useTranslation } from "react-i18next";
+import { WEB_NAME } from "../../constant";
 import LocalizationSection from "../customization/Localization";
+import ProfileSection from "../customization/ProfileSection";
 import ThemeModeSection from "../customization/ThemeMode";
 import useConfig from "../../hooks/useConfig";
-import { useEffect, useState } from "react";
-import useAuth from "../../hooks/useAuth";
-import { CsAlwayFlexEnd, CsFlexEnd } from "../flex";
-import { WEB_NAME, WEB_NAME_BRIEF } from "../../constant";
-import ProfileSection from "../customization/ProfileSection";
-
-
-const settings = ["Đổi mật khẩu", "Đăng xuất"];
 
 export default function HeaderAdmin() {
     const { borderRadius } = useConfig()
     const { drawerOpen } = useAppSelector((state) => state.menu)
-    const { t } = useTranslation()
     const theme = useTheme()
     const dispatch = useAppDispatch()
     const matchUpMd = useMediaQuery(theme.breakpoints.up("md"));
-
-    const { isAuthenticated, logout } = useAuth()
-
-    const [dataUser, setDataUser] = useState(JSON.parse(localStorage?.getItem("_authenticatedUser")))
-    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-
-    useEffect(() => {
-        setDataUser(JSON.parse(localStorage?.getItem("_authenticatedUser")))
-    }, []);
-
-
 
     return (
         <AppBar

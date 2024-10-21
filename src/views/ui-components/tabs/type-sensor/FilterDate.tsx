@@ -1,28 +1,33 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Avatar, Box, useTheme } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { IconChartHistogram, IconList } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
-import useConfig from "../../../../hooks/useConfig";
 import dayjs from "dayjs";
+
+import useConfig from "../../../../hooks/useConfig";
 import useObservation from "../../../../hooks/useObservation";
-import { useParams } from "react-router-dom";
+
 
 function FilterDate() {
-    const [startTime, setStartTime] = useState(dayjs(new Date()))
+    const [startTime, setStartTime] = useState(dayjs().subtract(30, 'day'))
     const [endTime, setEndTime] = useState(dayjs(new Date()))
     const theme = useTheme()
     const { id } = useParams();
+    const dataStreamId=Number(id);
     const { borderRadius } = useConfig()
-    const { filterObservationByRange,observation,setViewChart,isViewChart  } = useObservation(Number(id))
+
+    const { filterObservationByRange,setViewChart,isViewChart  } = useObservation(dataStreamId)
 
     useEffect(() => {
+        
         if (startTime !== null && endTime != null) {
             const range = {
                 startTime: startTime,
                 endTime: endTime
             }
-            filterObservationByRange(range);
+            filterObservationByRange(dataStreamId,range);
         }
     }, [startTime, endTime]);
 
@@ -33,7 +38,6 @@ function FilterDate() {
             flexDirection: { xs: "column", sm: "row" },
             alignItems: "center",
             gap: 1,
-            px: 2
         }}>
             <Box sx={{
                 display: "flex",
@@ -53,7 +57,6 @@ function FilterDate() {
                         slotProps={{ textField: { size: 'small' } }}
                         disableFuture={true}
                         format="DD/MM/YYYY hh:mm"
-                     
                     />
                 </LocalizationProvider>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -70,7 +73,7 @@ function FilterDate() {
                     />
                 </LocalizationProvider>
             </Box>
-            <Box sx={{
+            {/* <Box sx={{
                 display: "flex",
                 justifyContent: "flex-end",
                 alignItems: "center",
@@ -114,7 +117,7 @@ function FilterDate() {
                 >
                     <IconChartHistogram />
                 </Avatar>
-            </Box>
+            </Box> */}
         </Box>
     );
 }

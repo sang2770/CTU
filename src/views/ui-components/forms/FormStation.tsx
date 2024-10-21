@@ -7,7 +7,6 @@ import { Formik } from 'formik';
 
 import { MuiEffectButton } from '../../../components/button';
 import FormikCustomInput from '../../../components/input/FormikCustomInput';
-import { useEffect } from 'react';
 
 
 const FormStation = ({ ...others }) => {

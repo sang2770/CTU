@@ -1,16 +1,17 @@
-import { useMemo } from "react";
 import { Box, Drawer, IconButton, Typography, useMediaQuery } from "@mui/material";
+import { IconLogout2 } from "@tabler/icons-react";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import PerfectScrollbar from "react-perfect-scrollbar";
-import MenuList from "./menu-list";
-import { useAppDispatch, useAppSelector } from "../../store/hook";
+
 import { OPEN_DRWAWER, SELECT_ITEM } from "../../store/menu/action";
 import { SLIDEBAR_WIDTH } from "../../constant/customize";
-import Logo from "../logo";
-import { CsFlexBetween } from "../flex";
-import { IconLogout, IconLogout2 } from "@tabler/icons-react";
+import { useAppDispatch, useAppSelector } from "../../store/hook";
 import { VERSION } from "../../constant";
-import { useNavigate, useNavigation } from "react-router-dom";
+import Logo from "../logo";
+import MenuList from "./menu-list";
+
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
@@ -20,18 +21,17 @@ interface SidebarProps {
 
 const DrawerDashboard = ({ window }: SidebarProps) => {
   const theme = useTheme();
-  const matchUpMd = useMediaQuery(theme.breakpoints.up("md"));
-  const dispatch = useAppDispatch();
   const { drawerOpen } = useAppSelector((state) => state.menu);
+  const dispatch = useAppDispatch();
+  const matchUpMd = useMediaQuery(theme.breakpoints.up("md"));
   const navigate = useNavigate()
+
+
   const drawer = useMemo(() => (
     <PerfectScrollbar
       component="div"
       style={{
-        // height: !matchUpMd ? "calc(100vh - 56px)" : "calc(100vh - 88px)",
         height: "94vh",
-        // paddingLeft: "16px",
-        // paddingRight: "16px",
         paddingTop: "16px",
         paddingBottom: "16px",
       }}
@@ -53,6 +53,7 @@ const DrawerDashboard = ({ window }: SidebarProps) => {
       </Box>
     </Box>
   ), [])
+
   const container = window !== undefined ? () => window.document.body : undefined;
 
   return (
@@ -82,21 +83,15 @@ const DrawerDashboard = ({ window }: SidebarProps) => {
               borderRight: 0,
               m: 0,
               padding: 0,
-
-              // boxShadow: theme.palette.mode === "dark" ? 0 : "rgba(149, 157, 165, 0.2) 0px 8px 12px",
-
             }
           }}
           ModalProps={{ keepMounted: true }}
           color="inherit"
         >
-          {/* {drawerOpen && logo} */}
           {drawerOpen && drawer}
           {drawerOpen && footerDrawer}
         </Drawer>
-
       </Box>
-
     </>
   );
 };

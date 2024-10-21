@@ -23,7 +23,7 @@ Highcharts?.setOptions({
         useUTC: false
     },
     rangeSelector: {
-        inputEnabled: true
+        inputEnabled: false
     }
 })
 
@@ -77,7 +77,7 @@ function CustomHighChart({data}) {
             {
                 chart: {
                     type: 'line',
-                    height: 550,
+                    height: 450,
                 },
                 plotOptions: {
                     series: {

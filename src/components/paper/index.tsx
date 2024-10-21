@@ -5,7 +5,7 @@ export const CsPaperCenter = styled(Paper)(({ theme }) => ({
     display: "grid",
     placeItems: "center",
     background:`${theme.palette.background.paper}`,
-    border: `1px solid ${theme.palette.mode === "dark" ? theme.palette.grey[700] : theme.palette.grey[300]}`,
+    // border: `1px solid ${theme.palette.mode === "dark" ? theme.palette.grey[700] : theme.palette.grey[300]}`,
     [theme.breakpoints.down('md')]: {
         width: "100%"
     }
