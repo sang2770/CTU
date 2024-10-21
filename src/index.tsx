@@ -1,14 +1,12 @@
 
-import App from './App';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
-
-import { BASE_PATH, META_DATA } from './constant';
 import { ConfigProvider } from './contexts/ConfigContext';
+import { META_DATA } from './constant';
 import { store } from './store';
+import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!)

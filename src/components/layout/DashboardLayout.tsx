@@ -3,7 +3,7 @@ import { Box, useMediaQuery } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import { Outlet } from "react-router-dom";
 
-import { HEADER_HEIGHT, SLIDEBAR_WIDTH } from "../../constant/customize";
+import { SLIDEBAR_WIDTH } from "../../constant/customize";
 import { useAppDispatch, useAppSelector } from "../../store/hook";
 import { OPEN_DRWAWER } from "../../store/menu/action";
 import { MainCardProps } from "../card/MainCard";
@@ -11,7 +11,6 @@ import HeaderAdmin from "../header";
 import useConfig from "../../hooks/useConfig";
 import FooterAdmin from "../footer/FooterAdmin";
 import DrawerDashboard from "../drawer";
-import Customization from "../customization";
 
 interface MainStyleProps extends MainCardProps {
     open: boolean;

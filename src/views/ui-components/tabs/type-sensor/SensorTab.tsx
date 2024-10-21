@@ -1,33 +1,36 @@
 import { Grid, Typography, useTheme } from "@mui/material";
+import { useParams } from "react-router-dom";
+
+import { convertTimeFromString, convertTimeStampFromString } from "../../../../utils/formatTime";
+import { CsBoxCenter } from "../../../../components/box";
 import { CsFlexAlwaysBetween, CsFlexAlwayStart } from "../../../../components/flex";
 import { CsPaperCenter } from "../../../../components/paper";
-import { CsBoxCenter } from "../../../../components/box";
-import { convertTimeFromString, convertTimeStampFromString } from "../../../../utils/formatTime";
-import useConfig from "../../../../hooks/useConfig";
-import { useEffect, useState } from "react";
-
-import useObservation from "../../../../hooks/useObservation";
-import useSensor from "../../../../hooks/useSensor";
 import CustomHighChart from "../../../../components/chart";
-import { useParams } from "react-router-dom";
+import useConfig from "../../../../hooks/useConfig";
+import useObservation from "../../../../hooks/useObservation";
+
 import useStation from "../../../../hooks/useStation";
+import { useState } from "react";
+import dayjs from "dayjs";
 
 
 function SensorTab({ dataStreamId }) {
     const theme = useTheme()
-    const { borderRadius } = useConfig()
-    const { sensors } = useSensor()
-    const { stations } = useStation()
     const { id } = useParams()
-    const { observation, observationLatest, isViewChart } = useObservation(dataStreamId, stations?.find(item => item?.id === Number(id)))
+    const { borderRadius } = useConfig()
+    const { stations } = useStation()
+    
 
+    const [startTime, setStartTime] = useState(dayjs().subtract(30, 'day'))
+    const [endTime, setEndTime] = useState(dayjs(new Date()))
+    const { observation, observationLatest, isViewChart } = useObservation(dataStreamId, stations?.find(item => item?.id === Number(id)))
+    
     const transformedData = observation?.observations?.map(item => {
         return [
             convertTimeStampFromString(item.resultTime), // Chuyển đổi thời gian sang mili giây
             parseFloat(item.result.trim()) // Chuyển đổi kết quả sang số
         ];
     });
-    console.log("tr", observation);
 
     return (
         <Grid container spacing={2}>

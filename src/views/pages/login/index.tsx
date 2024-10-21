@@ -1,8 +1,8 @@
+import { useTranslation } from "react-i18next";
 import { Box, Grid, Typography, useTheme } from "@mui/material";
+
 import { CsBoxCenter } from "../../../components/box";
 import { CsPaperCenter } from "../../../components/paper";
-import { META_DATA } from "../../../constant";
-import { useTranslation } from "react-i18next";
 import FormLogin from "../../ui-components/forms/FormLogin";
 import FullScreenCard from "../../../components/card/FullScreenCard";
 import Logo from "../../../components/logo";
@@ -35,10 +35,7 @@ function LoginPage() {
                             height: "80%"
                         }}>
                             <CsBoxCenter>
-                                
                                    <Logo size="xl"/>
-                                
-                               
                                 <Typography
                                     textAlign={'center'}
                                     variant="body2"
@@ -78,13 +75,11 @@ function LoginPage() {
                                     </Grid>
                                 </Grid>
                             </CsPaperCenter>
-
                         </Box>
                     </Grid>
                 </Grid>
             </Box>
         </Box>
-
     );
 }
 

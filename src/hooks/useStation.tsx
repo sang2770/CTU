@@ -19,6 +19,8 @@ function useStation(stationId?:number) {
                 setAuthApiHeader()
                 const responseStations = await getAllStations()
                 dispath(STATIONS_GET_ALL({ stations: responseStations?.data }))
+                console.log("stations",responseStations?.data);
+                
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {

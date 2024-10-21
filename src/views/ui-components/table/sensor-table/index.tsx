@@ -1,23 +1,23 @@
 
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Avatar, Box, Button, Checkbox, FormControl, MenuItem, Pagination, PaginationItem, Select, SelectChangeEvent, Stack, Table, TableBody, TableContainer, Tooltip, Typography, useTheme } from "@mui/material";
 import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
+
 import { ContainerTable, StyledTableCell, StyledTableRow } from "../../../../components/table/style";
 import { CsFlexAlwaysCenter } from "../../../../components/flex";
-import { HeadCell, Order, Sensor } from "./table";
 import { EnhancedTableHead } from "./TableHead";
 import { EnhancedTableToolbar } from "../../../../components/table/TableToolBar";
 import { getComparator, stableSort } from "../../../../utils/table";
+import { HeadCell, Order, Sensor } from "./table";
 import { ROWSPERPAGE } from "../../../../constant/customize";
+import { SearchAndFilter } from "./TableSearchAndFilter";
 import CustomInput from "../../../../components/input/CustomInput";
 import CustomizedDialogs from "../../../../components/dialog";
+import FormSensor from "../../forms/FormSensor";
 import Nodata from "../../../../components/nodata";
 import useConfig from "../../../../hooks/useConfig";
-import { SearchAndFilter } from "./TableSearchAndFilter";
 import useSensor from "../../../../hooks/useSensor";
-import FormSensor from "../../forms/FormSensor";
 
 function createData(
   sensorId: number,
@@ -61,7 +61,6 @@ function CustomSensorTable({ isAdmin }: TableProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { borderRadius } = useConfig()
-  const navigate = useNavigate();
 
   const {sensors, filterSensors, isLoadingSensor } = useSensor()
 

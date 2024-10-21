@@ -3,9 +3,7 @@ import mqtt from 'mqtt';
 
 const useMqttSubscribe = () => {
     const routingKeyArr = ["actuator/controller-update", "actuator/automation-update"];
-
     const [message, setMessage] = useState(null);
-    const [client, setClient] = useState(null);
 
     useEffect(() => {
         const mqttClient = mqtt.connect('ws://dev.iotlab.net.vn:1884/mqtt', {
@@ -42,8 +40,6 @@ const useMqttSubscribe = () => {
         mqttClient.on('offline', () => {
             console.log('Client offline');
         });
-
-        setClient(mqttClient);
 
         return () => {
             mqttClient.end();

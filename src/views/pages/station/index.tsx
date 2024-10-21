@@ -1,27 +1,20 @@
-import { Box, Grid, Typography, useTheme } from "@mui/material";
-import IBreadcrumsCustom from "../../../components/breadcrums";
 import { useTranslation } from "react-i18next";
-import useStation from "../../../hooks/useStation";
-import dayjs from "dayjs";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Box, Grid, Typography, useTheme } from "@mui/material";
+
 import { CsPaperCenter } from "../../../components/paper";
 import FilterDate from "../../ui-components/tabs/type-sensor/FilterDate";
+import IBreadcrumsCustom from "../../../components/breadcrums";
 import TypeSensorTabs from "../../ui-components/tabs/type-sensor";
-import useSensors from "../../../hooks/useObservation";
+import useStation from "../../../hooks/useStation";
 
 
 const StationPage: React.FC<{ id: string }> = ({ id }) => {
     const { t } = useTranslation()
     const theme = useTheme()
-
-    const [fromDate, setFromDate] = useState(new Date())
-    const [toDate, setToDate] = useState(new Date())
     
     const { stations } = useStation()
     
     const stationNameById = stations?.find(item => item?.id?.toString() === id)?.name
-
 
     return (
         <Grid container spacing={2}>
@@ -49,7 +42,6 @@ const StationPage: React.FC<{ id: string }> = ({ id }) => {
                         </Grid>
                     </Grid>
                 </CsPaperCenter>
-
             </Grid>
         </Grid>
     );

@@ -1,20 +1,22 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Avatar, Box, useTheme } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { IconChartHistogram, IconList } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
-import useConfig from "../../../../hooks/useConfig";
 import dayjs from "dayjs";
+
+import useConfig from "../../../../hooks/useConfig";
 import useObservation from "../../../../hooks/useObservation";
-import { useParams } from "react-router-dom";
+
 
 function FilterDate() {
-    const [startTime, setStartTime] = useState(dayjs(new Date()))
+    const [startTime, setStartTime] = useState(dayjs().subtract(30, 'day'))
     const [endTime, setEndTime] = useState(dayjs(new Date()))
     const theme = useTheme()
     const { id } = useParams();
     const { borderRadius } = useConfig()
-    const { filterObservationByRange,observation,setViewChart,isViewChart  } = useObservation(Number(id))
+    const { filterObservationByRange,setViewChart,isViewChart  } = useObservation(Number(id))
 
     useEffect(() => {
         if (startTime !== null && endTime != null) {
@@ -53,7 +55,6 @@ function FilterDate() {
                         slotProps={{ textField: { size: 'small' } }}
                         disableFuture={true}
                         format="DD/MM/YYYY hh:mm"
-                     
                     />
                 </LocalizationProvider>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>

@@ -1,10 +1,11 @@
 import { Box, Grid, Typography } from "@mui/material";
-import ImageCard from "../../../components/card/ImageCard";
-import { CsPaperAspectRatioCenter, CsPaperCenter, CsPaperTop } from "../../../components/paper";
-import { CsBoxCenter } from "../../../components/box";
-import { CsFlexStart } from "../../../components/flex";
-import IBreadcrumsCustom from "../../../components/breadcrums";
 import { useTranslation } from "react-i18next";
+
+import { CsBoxCenter } from "../../../components/box";
+import { CsPaperCenter } from "../../../components/paper";
+import IBreadcrumsCustom from "../../../components/breadcrums";
+import ImageCard from "../../../components/card/ImageCard";
+
 
 function AboutPage() {
     const { t } = useTranslation()

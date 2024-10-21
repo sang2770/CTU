@@ -1,10 +1,11 @@
-import { Button, CircularProgress, Container, Grid, Typography, useTheme, Snackbar, TextField } from "@mui/material"; // Thêm Snackbar vào import
+import { toast } from "react-toastify";
+import { Button, CircularProgress, Container, Grid, Typography, useTheme, TextField } from "@mui/material"; // Thêm Snackbar vào import
 import { ChangeEvent, useEffect, useState } from "react";
+
 import useMQTTSubscribe from "../../../hooks/useMQTTSubscribe";
 import useDevice from "../../../hooks/useDevice";
 import { CsFlexAlwaysBetween, CsFlexAlwayStart } from "../../../components/flex";
 import { CsPaperCenter } from "../../../components/paper";
-import { toast } from "react-toastify";
 
 function FarmPage() {
     const theme = useTheme();
@@ -19,7 +20,6 @@ function FarmPage() {
         updateConfiguration,
         showSettings,
         toggleSettings, 
-        messageDevice
     } = useDevice();
 
     const [configurationValue, setConfigurationValue] = useState({
@@ -71,7 +71,6 @@ function FarmPage() {
     return (
         <Container maxWidth="xs">
             <CsPaperCenter sx={{ p: 2 }}>
-
                 {showSettings ? (
                     <CsPaperCenter sx={{ mt: 2, p: 2, borderRadius: "8px", border: `1px solid ${theme.palette.primary.main}` }}>
                         <Typography variant="h6">Cài đặt thông số</Typography>
@@ -214,7 +213,6 @@ function FarmPage() {
                                 </Button>
                             </Grid>
                             <Grid item xs={3}></Grid>
-
                             {/* Nút trái, OK, phải */}
                             <Grid item xs={3}></Grid>
                             <Grid item xs={3}>

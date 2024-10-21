@@ -1,8 +1,6 @@
-import { IconAdjustments, IconBrandDatabricks, IconCamera, IconDeviceMobile, IconDeviceMobileCog, IconInfoCircle, IconInfoSquare, IconShape, IconSmartHome, IconUsers } from '@tabler/icons-react';
+import { IconDeviceMobileCog, IconInfoCircle, IconInfoSquare, IconShape, IconSmartHome, IconUsers } from '@tabler/icons-react';
 import { NavItemType } from './type';
 import useAuth from '../../hooks/useAuth';
-
-// ==============================|| DASHBOARD MENU ITEMS ||============================== //
 
 const dashboardGuest = [
     {
@@ -80,7 +78,6 @@ const dashboardAdmin = [
                         title: "Trang trại",
                         type: 'item',
                         url: '/farm-management',
-                        icon: <IconCamera stroke={1.5} />,
                         breadcrumbs: true,
                     },
                     {
@@ -88,7 +85,6 @@ const dashboardAdmin = [
                         title: "Ruộng/ao",
                         type: 'item',
                         url: '/field-pond-management',
-                        icon: <IconAdjustments stroke={1.5} />,
                         breadcrumbs: true,
                     },
                     {
@@ -96,7 +92,6 @@ const dashboardAdmin = [
                         title: "Trạm quan trắc",
                         type: 'item',
                         url: '/station-management',
-                        icon: <IconAdjustments stroke={1.5} />,
                         breadcrumbs: true,
                     },
                     {
@@ -104,7 +99,6 @@ const dashboardAdmin = [
                         title: "Cảm biến",
                         type: 'item',
                         url: '/sensor-management',
-                        icon: <IconAdjustments stroke={1.5} />,
                         breadcrumbs: true,
                     },
                     {
@@ -112,7 +106,6 @@ const dashboardAdmin = [
                         title: "Thiết bị",
                         type: 'item',
                         url: '/device-management',
-                        icon: <IconAdjustments stroke={1.5} />,
                         breadcrumbs: true,
                     },
                     {
@@ -120,14 +113,11 @@ const dashboardAdmin = [
                         title: "Vi điều khiển",
                         type: 'item',
                         url: '/microcontroller-management',
-                        icon: <IconAdjustments stroke={1.5} />,
                         breadcrumbs: true,
                     },
                     
                 ]
             }
-
-
         ]
     },
 ]

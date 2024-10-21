@@ -10,9 +10,7 @@ function useDevice() {
     const [isLoadingStatus, setIsLoadingStatus] = useState(false);
     const [isLoadingStatusAuto, setIsLoadingStatusAuto] = useState(false);
     const [message, setMessage] = useState('')
-
-    // State để mở/đóng giao diện cài đặt min, middle, max
-    const [showSettings, setShowSettings] = useState(false);
+    const [showSettings, setShowSettings] = useState(false); // State để mở/đóng giao diện cài đặt min, middle, max
 
     useEffect(() => {
         const fetchData = async () => {
@@ -42,7 +40,7 @@ function useDevice() {
     const changeStatus = async (id: number, status: string) => {
         try {
             setIsLoadingStatus(true);
-            const response = await deviceControlApi.patch("/configure", {
+            await deviceControlApi.patch("/configure", {
                 id: id,
                 configuration: { status: status }
             });
@@ -57,7 +55,7 @@ function useDevice() {
     const changeStatusAuto = async (ids: number[], status: number) => {
         try {
             setIsLoadingStatusAuto(true);
-            const response = await deviceControlApi.patch("/automation", {
+            await deviceControlApi.patch("/automation", {
                 automation: status == 1 ? 0 : 1,
                 taskingCapabilityIds: ids
             });
@@ -68,7 +66,6 @@ function useDevice() {
             setIsLoadingStatusAuto(false);
         }
     };
-
 
     const updateConfiguration = async (ids: number[], configurationValue: any) => {
         try {

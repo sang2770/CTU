@@ -4,24 +4,17 @@ import { useTranslation } from "react-i18next";
 
 import { MarkerProps } from "../../../types/marker";
 import useDams from "../../../hooks/useDams";
-import useStation from "../../../hooks//old/useStation";
 import { CsPaperCenter } from "../../../components/paper";
 import GoogleMap from "../../ui-components/google-map";
-import dayjs from "dayjs";
+import useStation from "../../../hooks/useStation";
 
 
 function MapSection() {
     const theme = useTheme()
     const { t } = useTranslation()
-
-
-    const today = new Date();
-
     const { damMarkers, isLoadingDams } = useDams()
-    // const { stationMarkers, isLoadingStations } = useStation()
-    const { stationMarkers, isLoadingStations } = useStation(dayjs(today).format('YYYY/MM/DD'), dayjs(today).format('YYYY/MM/DD'), 1, 1000)
+    const { stationMarkers, isLoadingStations } = useStation()
     
-
     const [mapViewMode, setMapViewMode] = useState(1)
     const [commonMarkers, setCommonMarkers] = useState<MarkerProps[]>([...damMarkers, ...stationMarkers])
 
@@ -51,8 +44,6 @@ function MapSection() {
         })
     }
 
-
-
     const handleSetZoom = (value) => {
         if (typeof value?.detail?.zoom === 'number' && value?.detail?.zoom > 0) {
             setMapConfig((prev) => {
@@ -62,7 +53,6 @@ function MapSection() {
     }
 
     useEffect(() => {
-
         let minLat = Math.min(...commonMarkers?.map((item) => item?.position?.latitude));
         let maxLat = Math.max(...commonMarkers?.map((item) => item?.position?.latitude));
         let minLng = Math.min(...commonMarkers?.map((item) => item?.position?.longitude));
@@ -74,7 +64,6 @@ function MapSection() {
             south: minLat
         }
         handleSetBounds(bounds)
-
     }, [damMarkers, stationMarkers, commonMarkers])
 
     useEffect(() => {
@@ -91,9 +80,6 @@ function MapSection() {
         }
         else setCommonMarkers([...damMarkers, ...stationMarkers])
     }, [mapViewMode, damMarkers, stationMarkers])
-
-    
-   
 
     return (
         <CsPaperCenter>
@@ -137,7 +123,6 @@ function MapSection() {
                     :
                     <GoogleMap mapConfig={mapConfig} commonMarkers={commonMarkers} handleSetZoom={handleSetZoom} />
                 }
-
             </Box>
         </CsPaperCenter>
     );
