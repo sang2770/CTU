@@ -14,7 +14,7 @@ function useObservation(dataStreamId?: number, stationIn?: any, range?: any) {
 
     const [isLoadingObservation, setLoadingObservation] = useState(false);
 
-    const getObservationByStationId = async (stationData) => {
+    const getObservationByStation = async (stationData) => {
         try {
             setLoadingObservation(true);
             let tempDTO = [];
@@ -55,8 +55,8 @@ function useObservation(dataStreamId?: number, stationIn?: any, range?: any) {
     };
 
     // Lấy dữ liệu quan trắc mới nhất của một station
-    const getObservationLatest = async (stationIn) => {
-        const data = await getObservationByStationId(stationIn);
+    const getObservationLatest = async (stationData) => {
+        const data = await getObservationByStation(stationData);
         dispatch(OBSERVATION_LATEST_BY_ID({ observationLatest: data }));
     }
 
@@ -65,7 +65,7 @@ function useObservation(dataStreamId?: number, stationIn?: any, range?: any) {
         const groupedObservations = {};
 
         for (const station of stations) {
-            const data = await getObservationByStationId(station);
+            const data = await getObservationByStation(station);
 
             if (data) {
                 const { stationId } = data;
@@ -126,8 +126,7 @@ function useObservation(dataStreamId?: number, stationIn?: any, range?: any) {
         isLoadingObservation,
         isViewChart,
         filterObservationByRange,
-        setViewChart,
-        // getObservationByStationId
+        setViewChart
     };
 }
 
