@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { getObservationsByIdLatest, getObservationsByRange } from "../services/observation-services";
-import { OBSERVATION_BY_ID, OBSERVATION_LATEST_BY_ID, OBSERVATION_VIEW_CHART } from "../store/observation/action";
+import { OBSERVATION_BY_ID, OBSERVATION_LATEST_BY_ID, OBSERVATION_VIEW_CHART, OBSERVATIONS_LATEST_GET_ALL } from "../store/observation/action";
 import { Observation, ObservationHistory } from "../store/observation/reducer";
 import { useAppDispatch, useAppSelector } from "../store/hook";
 
 
-function useObservation(dataStreamId?: number, stationIn?: any, range?:any) {
+function useObservation(dataStreamId?: number, stationIn?: any, range?: any) {
     const { observationsLatest, observationLatest, observations, observation, isViewChart } = useAppSelector(state => state.observation);
     const { stations, station } = useAppSelector(state => state.station);
     const { sensors } = useAppSelector(state => state.sensor);
-    const [observationsData, setObservations] = useState<Observation[]>([]);
-    const [isLoadingObservation, setLoadingObservation] = useState(false);
     const dispatch = useAppDispatch();
 
-    const fetchDataObservationByStationId = async (stationData) => {
+    const [isLoadingObservation, setLoadingObservation] = useState(false);
+
+    const getObservationByStationId = async (stationData) => {
         try {
             setLoadingObservation(true);
             let tempDTO = [];
@@ -54,100 +54,71 @@ function useObservation(dataStreamId?: number, stationIn?: any, range?:any) {
         }
     };
 
-    useEffect(() => {
-        const fetchAllObservations = async () => {
-            const groupedObservations = {};
+    // Lấy dữ liệu quan trắc mới nhất của một station
+    const getObservationLatest = async (stationIn) => {
+        const data = await getObservationByStationId(stationIn);
+        dispatch(OBSERVATION_LATEST_BY_ID({ observationLatest: data }));
+    }
 
-            for (const station of stations) {
-                const data = await fetchDataObservationByStationId(station);
-                if (data) {
-                    const { stationId } = data;
-                    if (!groupedObservations[stationId]) {
-                        groupedObservations[stationId] = {
-                            ...data,
-                            observations: []
-                        };
-                    }
-                    groupedObservations[stationId].observations.push(...data.observations);
+    // Lấy dữ liệu quan trắc mới nhất của tất cả các station
+    const getObservations = async () => {
+        const groupedObservations = {};
+
+        for (const station of stations) {
+            const data = await getObservationByStationId(station);
+
+            if (data) {
+                const { stationId } = data;
+                if (!groupedObservations[stationId]) {
+                    groupedObservations[stationId] = {
+                        ...data,
+                        observations: []
+                    };
                 }
+                groupedObservations[stationId].observations.push(...data.observations);
             }
-
-            setObservations(Object.values(groupedObservations));
-        };
-
-        if (stations.length) {
-            fetchAllObservations();
         }
-    }, [stations]);
 
-    // useEffect(() => {
-    //     filterObservationByRange(range)
-    // }, [range, dataStreamId]);
-
-    const filterObservationByRange = async (range) => {
-        if (dataStreamId) {
-            try {
-                const startTime = dayjs(range?.startTime).toISOString();
-                const endTime = dayjs(range?.endTime).toISOString();
-                setLoadingObservation(true);
-                const response = await getObservationsByRange(dataStreamId, startTime, endTime);
-                dispatch(OBSERVATION_BY_ID({
-                    observation: {
-                        observations: response?.data,
-                        stationId: station?.id,
-                        stationName: station?.name,
-                    }
-                }));
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoadingObservation(false);
-            }
+        dispatch(OBSERVATIONS_LATEST_GET_ALL({ observationsLatest: Object.values(groupedObservations) }))
+    };
+    // Lấy dữ liệu quan trắc theo thời gian của một station bằng datastreamId
+    const filterObservationByRange = async (dataStreamId, range) => {
+        try {
+            const startTime = dayjs(range?.startTime).toISOString();
+            const endTime = dayjs(range?.endTime).toISOString();
+            setLoadingObservation(true);
+            const response = await getObservationsByRange(dataStreamId, startTime, endTime);
+            dispatch(OBSERVATION_BY_ID({
+                observation: {
+                    observations: response?.data,
+                    stationId: station?.id,
+                    stationName: station?.name,
+                }
+            }));
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
+            setLoadingObservation(false);
         }
     };
+
+    useEffect(() => {
+        if (dataStreamId && range) filterObservationByRange(dataStreamId, range)
+    }, [dataStreamId,range]);
+
+    useEffect(() => {
+        if (stations.length > 0) getObservations();
+    }, [stations]);
+
+    useEffect(() => {
+        if (stationIn) getObservationLatest(stationIn)
+    }, [station, sensors]);
 
     const setViewChart = (isView) => {
         dispatch(OBSERVATION_VIEW_CHART({ isViewChart: isView }));
     };
-    useEffect(() => {
-        console.log(stationIn);
-        const fetchDataObservationByStationId = async (stationData) => {
-            try {
-                setLoadingObservation(true)
-                let tempDTO = [];
-                let tempSensor = []
-                stationData?.multiDataStreamDTOs?.map(multiDataStreamDTO => {
-                    tempDTO?.push(multiDataStreamDTO?.multiDataStreamId)
-                    tempSensor?.push(multiDataStreamDTO?.sensor.sensorId)
-                })
-                const response = await getObservationsByIdLatest(tempDTO);
-                let tempObs: ObservationHistory[] = []
 
-                response?.data?.map(item => {
-                    tempObs.push({
-                        dataStreamId: item?.dataStreamId,
-                        id: item?.id,
-                        name: sensors?.find(item => tempSensor?.find(s => s === item?.id))?.name,
-                        result: item?.result,
-                        resultTime: item?.resultTime
-                    })
-                })
-                const data: Observation = {
-                    observations: tempObs,
-                    stationName: stationData.name,
-                    stationId: stationData.id
-                };
-                dispatch(OBSERVATION_LATEST_BY_ID({ observationLatest: data }));
-            } catch (error) {
-                console.error("Error fetching data:", error)
-            } finally {
-                setLoadingObservation(false)
-            }
-        }
-        if (stationIn) fetchDataObservationByStationId(stationIn)
-    }, [station, sensors]);
     return {
-        observationsData,
         observationsLatest,
         observationLatest,
         observations,
@@ -156,7 +127,7 @@ function useObservation(dataStreamId?: number, stationIn?: any, range?:any) {
         isViewChart,
         filterObservationByRange,
         setViewChart,
-        fetchDataObservationByStationId
+        // getObservationByStationId
     };
 }
 

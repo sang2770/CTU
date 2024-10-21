@@ -75,7 +75,7 @@ function CustomStationTable({ isAdmin }: TableProps) {
   const { borderRadius } = useConfig()
   const navigate = useNavigate();
   const { stations, isLoadingStations } = useStation()
-  const { observationsData, isLoadingObservation } = useObservation()
+  const { observationsLatest, isLoadingObservation } = useObservation()
   const { things, isLoadingThings } = useThings()
 
   const [page, setPage] = useState(1);
@@ -93,7 +93,7 @@ function CustomStationTable({ isAdmin }: TableProps) {
   };
 
   const rows = useMemo(() => {
-    return observationsData?.map((observation, index) => {
+    return observationsLatest?.map((observation, index) => {
       return createData(
         index + 1,
         things?.find(item => item?.historicalStations?.find(stationOfThing => stationOfThing?.stationId === observation?.stationId))?.thingId,
@@ -104,7 +104,7 @@ function CustomStationTable({ isAdmin }: TableProps) {
         "date"
       );
     });
-  }, [observationsData]);
+  }, [observationsLatest]);
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
