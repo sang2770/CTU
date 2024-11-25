@@ -595,7 +595,7 @@ const FarmPage: React.FC = () => {
           </IconButton>
           <DialogTitle>Vẽ Trang Trại</DialogTitle>
           <DialogContent>
-            <DrawFarmComponent id = {farmData?.agriAreaId}/>
+            <DrawFarmComponent id = {farmData?.agriAreaId} name={farmData?.areaName}/>
           </DialogContent>
         </Dialog>
       </Grid>

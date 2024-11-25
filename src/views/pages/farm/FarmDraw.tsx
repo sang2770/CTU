@@ -17,6 +17,7 @@ import Alert from '@mui/material/Alert';
 
 interface Props {
     id: string | number;
+    name: string;
 }
 
 interface FarmPolygonInfo{
@@ -34,10 +35,12 @@ const DrawFarmComponent: React.FC<Props> = (props: Props) => {
   const [farms, setFarms] = useState<string[]>([]);
   const [success, setSuccess] = useState(null);
   const [error, setError] = useState(null);
+  const [render, setRender] = useState(false);
+
+
 
 
   useEffect(() => {
-
     // Define the async function inside useEffect
     let mapObject: any = null;
     const initializeMap = async () => {
@@ -71,7 +74,7 @@ const DrawFarmComponent: React.FC<Props> = (props: Props) => {
         }catch (error) {
           console.error("Error fetching data:", error);
         }
-        console.log(response);
+        console.log(response?.data?.coordinates);
         
         const storedShapes: FarmPolygonInfo[] = JSON.parse(response?.data?.coordinates ?? "[]");
         localStorage.setItem("shapes_"+props.id, JSON.stringify(storedShapes));
@@ -83,8 +86,9 @@ const DrawFarmComponent: React.FC<Props> = (props: Props) => {
           const transformedCoords = coordinates.map((coord: any) => fromLonLat(coord));
           const polygon = new Polygon([transformedCoords]);
           const feature = new Feature(polygon);
-  
-          feature.setStyle(getStylePolygon(name));
+
+          const farmName = props.name ?? 'Farm ' + props.id;
+          feature.setStyle(getStylePolygon(farmName));
           source.addFeature(feature);
         });
   
@@ -106,7 +110,7 @@ const DrawFarmComponent: React.FC<Props> = (props: Props) => {
         mapObject.setTarget(undefined);
       }
     };
-  }, [props.id]); // Added dependency for `props.id`
+  }, [props.id, render]); // Added dependency for `props.id`
   
   
 
@@ -202,7 +206,7 @@ const DrawFarmComponent: React.FC<Props> = (props: Props) => {
       draw.on("drawend", (event) => {
         const feature = event.feature;
         const geometry = feature.getGeometry();
-        const farmName = `Farm ${farmCount}`;
+        const farmName = props.name ?? 'Farm ' + props.id;
         // Kiểm tra xem geometry có phải là Polygon không
         if (geometry instanceof Polygon) {
           const coordinates = geometry.getCoordinates(); // Lấy tọa độ của polygon
@@ -267,6 +271,20 @@ const DrawFarmComponent: React.FC<Props> = (props: Props) => {
     })
   }
 
+  const handleDelete = () => {
+     axios.delete("http://localhost:8080/api/farms/"+props.id).then(res => {
+        setSuccess('Delete successfully');
+        setRender(!render);
+     }).catch(res => {
+        setError(res);
+     }).finally(() => {
+        setTimeout(() => {
+          setError(null);
+          setSuccess(null);
+        }, 2000);
+     })
+  }
+
   return (
     <div style={{ position: "relative", width: "100%", height: "80vh" }}>
       <div ref={mapRef} style={{ width: "100%", height: "90%" }} />
@@ -303,6 +321,24 @@ const DrawFarmComponent: React.FC<Props> = (props: Props) => {
         }}
       >
         Vẽ Farm
+      </Button>
+
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleDelete}
+        style={{
+          position: "absolute",
+          top: "110px",
+          left: "10px",
+          padding: "10px 20px",
+          borderRadius: "8px",
+          fontSize: "16px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+          zIndex: 1000,
+        }}
+      >
+        Xóa Farm
       </Button>
 
       <div
