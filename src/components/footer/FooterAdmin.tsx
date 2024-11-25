@@ -27,14 +27,14 @@ export default function FooterAdmin() {
                 width: "100%"
             }}>
                 <Box>
-                    <Link href={"#"} sx={{ color: theme.palette.primary.main }}>
+                    <Link href={"https://www.cit.ctu.edu.vn/index.php/cacdonvi/khoa-cong-nghe-phan-mem"} sx={{ color: theme.palette.primary.main }}>
                         <Typography variant="body2" sx={{ color: theme.palette.primary.main, }}>{AUTHOR_ONE}</Typography>
                     </Link>
                 </Box>
 
 
                 <Box justifyContent={"flex-end"} alignItems={"center"} sx={{ display: "flex", gap: 1 }}>
-                    <Link href={"#"} sx={{ color: theme.palette.primary.main }}>
+                    <Link href={"https://www.cit.ctu.edu.vn/"} sx={{ color: theme.palette.primary.main }}>
                         <Typography variant="body2" sx={{ color: theme.palette.primary.main, }}>{AUTHOR_TWO}</Typography>
                     </Link>
                 </Box>

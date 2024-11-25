@@ -54,6 +54,15 @@ const thingApi = axios.create({
     headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"
+    },
+})
+//FARM
+const farmApi = axios.create({
+    baseURL: `${SENSING_API_URL}/agri-areas`,
+    timeout: 10000,
+    headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
     }
 })
 
@@ -95,11 +104,25 @@ const observationApiV2 = axios.create({
     }
 })
 
-const setAuthApiHeader = () => {
-    authApi.interceptors.request.use((config) => {
-        const accessToken = JSON.parse(localStorage.getItem('_authenticatedUser'))?.accessToken
-        config.headers['Authorization'] = accessToken
-        return config
-    })
-}
-export { authApi, damApi, cameraApi, deviceControlApi, observationApi,observationApiV2,thingApi,stationApi,sensorApi, setAuthApiHeader }
+// const setAuthApiHeader = () => {
+//     authApi.interceptors.request.use((config) => {
+//         const accessToken = JSON.parse(localStorage.getItem('_authenticatedUser'))?.accessToken
+//         config.headers['Authorization'] = accessToken
+//         return config
+//     })
+// }
+const setAuthApiHeader = (apiInstance) => {
+    apiInstance.interceptors.request.use((config) => {
+        const accessToken = JSON.parse(localStorage.getItem('_authenticatedUser'))?.accessToken;
+        if (accessToken) {
+            config.headers['Authorization'] = `Bearer ${accessToken}`;
+        }
+        return config;
+    }, (error) => {
+        return Promise.reject(error);
+    });
+};
+setAuthApiHeader(farmApi)
+// setAuthApiHeader(thingApi)
+// setAuthApiHeader(stationApi)
+export { authApi, damApi, cameraApi, deviceControlApi, observationApi, observationApiV2, thingApi, farmApi, stationApi, sensorApi, setAuthApiHeader }

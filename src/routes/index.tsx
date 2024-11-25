@@ -21,8 +21,8 @@ const MicroControllerManagementPage = Loadable(lazy(() => import("../views/pages
 // const HomePage = Loadable(lazy(() => import("../views/pages/home")));
 
 const StationWrapper: React.FC = () => {
-  const params = useParams<{ id: string,thingId:string }>();
-  return <StationPage id={params.id!}/>;
+  const params = useParams<{ id: string, thingId: string }>();
+  return <StationPage id={params.id!} />;
 };
 
 export default function Routes() {
@@ -44,7 +44,11 @@ export default function Routes() {
         {/* Logined */}
         <Route path="/device-control" element={<DeviceControlPage />} />
         <Route path="/farm" element={<FarmPage />} />
-        <Route path="/farm/pond" element={<PondPage />} />
+        <Route path="/farm/:thingId/station/:id" element={<StationWrapper />} />
+        <Route path="/farm/:farmId/thing" element={<PondPage />} />
+
+
+        {/* <Route path="/farm/pond" element={<PondPage />} /> */}
 
         {/* Logined admin*/}
         <Route path="/farm-management" element={<FarmManagementPage />} />

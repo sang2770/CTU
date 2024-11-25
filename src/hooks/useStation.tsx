@@ -4,8 +4,8 @@ import { STATIONS_GET_ALL, STATIONS_GET_BY_ID } from "../store/station/action";
 import { setAuthApiHeader } from "../services/global-axios";
 import { getAllStations, getStationById } from "../services/sensing-services";
 
-function useStation(stationId?:number) {
-    const { stations,station } = useAppSelector(state => state.station)
+function useStation(stationId?: number) {
+    const { stations, station } = useAppSelector(state => state.station)
     const { stationMarkers } = useAppSelector(state => state.marker)
     const { things } = useAppSelector(state => state.thing)
     const dispath = useAppDispatch()
@@ -16,11 +16,11 @@ function useStation(stationId?:number) {
         const fetchData = async () => {
             try {
                 setLoadingStations(true)
-                setAuthApiHeader()
+                // setAuthApiHeader()
                 const responseStations = await getAllStations()
                 dispath(STATIONS_GET_ALL({ stations: responseStations?.data }))
-                console.log("stations",responseStations?.data);
-                
+                console.log("stations", responseStations?.data);
+
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
@@ -35,7 +35,7 @@ function useStation(stationId?:number) {
         const fetchData = async () => {
             try {
                 setLoadingStations(true)
-                setAuthApiHeader()
+                // setAuthApiHeader()
                 const responseStations = await getStationById(stationId)
                 dispath(STATIONS_GET_BY_ID({ station: responseStations?.data }))
             } catch (error) {
@@ -44,13 +44,13 @@ function useStation(stationId?:number) {
                 setLoadingStations(false)
             }
         };
-        if(stationId) fetchData();
+        if (stationId) fetchData();
     }, [things]);
 
 
     // useEffect(() => {
     //     const stationHavePosition = stations?.filter(item => item?.latitude !== "")
-                
+
     //     // Map the station data to markers
     //     const getMarkers = stationHavePosition?.map(station => ({
     //         content: (

@@ -71,7 +71,6 @@ function DashboardLayout() {
 
     useEffect(() => {
         dispatch(OPEN_DRWAWER({ drawerOpen: !matchDownMd }));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [matchDownMd]);
 
 

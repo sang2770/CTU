@@ -10,10 +10,6 @@ import useThings from "../../../hooks/useThings";
 import useStation from "../../../hooks/useStation";
 import useObservation from "../../../hooks/useObservation";
 
-// import useObservation from "../../../hooks/useObservation";
-// import useStation from "../../../hooks/useStation";
-// import useThings from "../../../hooks/useThings";
-
 function FarmPage() {
     const [currentPond, setCurrentPond] = useState(1);  // Mặc định là ao 1
     const theme = useTheme();
@@ -34,20 +30,8 @@ function FarmPage() {
 
     const { message } = useMQTTSubscribe();
 
-    // useEffect(() => {
-    //     const pondData = dataFromBE?.find(item => item.id === currentPond)?.autoConfig;
-    //     setConfigurationValue(prev => ({
-    //         ...prev,
-    //         [currentPond]: {
-    //             min: pondData?.min || "0",
-    //             middle: pondData?.middle || "0",
-    //             max: pondData?.max || "0"
-    //         }
-    //     }));
-    //     setIsConfigurationChanged(false); // Reset trạng thái khi nhận được dữ liệu mới
-    // }, [dataFromBE, currentPond]);
     useEffect(() => {
-        // Khi `dataFromBE` hoặc `currentPond` thay đổi, cập nhật lại configurationValue cho ao hiện tại
+
         const pondData = dataFromBE?.find(item => item.id === getValveIds().inputValveId)?.autoConfig;
         console.log("pondData", currentPond, pondData);
 
@@ -62,10 +46,8 @@ function FarmPage() {
             }));
         }
 
-        setIsConfigurationChanged(false); // Reset trạng thái thay đổi cấu hình
-    }, [dataFromBE, currentPond]);  // Lắng nghe thay đổi của `dataFromBE` và `currentPond`
-
-
+        setIsConfigurationChanged(false);
+    }, [dataFromBE, currentPond]);
 
     useEffect(() => {
         // Fetch dữ liệu từ server khi trang load hoặc khi có thay đổi (từ MQTT)
@@ -98,52 +80,16 @@ function FarmPage() {
         changeStatusAuto(ids, status);
     };
 
-    // const handleSaveSettings = async () => {
-    //     const { min, middle, max } = configurationValue[currentPond];
-    //     await updateConfiguration([inputValveId, outputValveId], { min, middle, max });
-    //     toast.success("Lưu cài đặt thành công");
-    //     toggleSettings();
-    //     setIsConfigurationChanged(false); // Reset trạng thái khi lưu thành công
-    // };
     const handleSaveSettings = async () => {
         const { min, middle, max } = configurationValue[currentPond];  // Chỉ lấy cấu hình của ao hiện tại
         await updateConfiguration([inputValveId, outputValveId], { min, middle, max });
         toast.success("Lưu cài đặt thành công");
-
         // Gọi lại fetchData sau khi lưu để đảm bảo dữ liệu từ server được đồng bộ
         fetchData();
 
         toggleSettings();
         setIsConfigurationChanged(false);  // Reset lại trạng thái khi lưu thành công
     };
-
-
-
-    // const handleChangeValue = (event: ChangeEvent<HTMLInputElement>) => {
-    //     const { name, value } = event.target;
-
-    //     if (value === '' || /^[0-9]*$/.test(value)) {
-    //         setConfigurationValue(prev => ({
-    //             ...prev,
-    //             [currentPond]: {
-    //                 ...prev[currentPond],
-    //                 [name]: value
-    //             }
-    //         }));
-
-    //         // Kiểm tra xem có sự thay đổi nào không
-    //         const originalConfig = dataFromBE?.find(item => item.id === currentPond)?.autoConfig;
-    //         if (originalConfig) {
-    //             if (
-    //                 value !== originalConfig[name] // Kiểm tra từng giá trị
-    //             ) {
-    //                 setIsConfigurationChanged(true);
-    //             } else {
-    //                 setIsConfigurationChanged(false);
-    //             }
-    //         }
-    //     }
-    // };
 
     // Định nghĩa hàm xử lý sự kiện onChange đúng kiểu
     const handleChangeValue = (event: ChangeEvent<HTMLInputElement>) => {
@@ -336,6 +282,80 @@ function FarmPage() {
                                 Cài đặt
                             </Button>
                         </CsFlexAlwaysBetween>
+
+                        {/* Bố cục 5 nút điều khiển*/}
+                        <Grid container spacing={2} justifyContent="center" alignItems="center" sx={{ marginTop: "-10px", marginLeft: "100px" }}>
+
+                            <Grid item xs={3}></Grid>
+                            <Grid item xs={3}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        width: "60px",
+                                        height: "60px",
+                                        backgroundColor: theme.palette.primary.main
+                                    }}
+                                >
+                                    ↑
+                                </Button>
+                            </Grid>
+                            <Grid item xs={3}></Grid>
+
+                            {/* Nút trái, OK, phải */}
+                            <Grid item xs={3}></Grid>
+                            <Grid item xs={3}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        width: "60px",
+                                        height: "60px",
+                                        backgroundColor: theme.palette.primary.main
+                                    }}
+                                >
+                                    ←
+                                </Button>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        width: "60px",
+                                        height: "60px",
+                                        backgroundColor: theme.palette.primary.main
+                                    }}
+                                >
+                                    OK
+                                </Button>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        width: "60px",
+                                        height: "60px",
+                                        backgroundColor: theme.palette.primary.main
+                                    }}
+                                >
+                                    →
+                                </Button>
+                            </Grid>
+
+                            {/* Nút xuống */}
+                            <Grid item xs={3}></Grid>
+                            <Grid item xs={3}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        width: "60px",
+                                        height: "60px",
+                                        backgroundColor: theme.palette.primary.main
+                                    }}
+                                >
+                                    ↓
+                                </Button>
+                            </Grid>
+                            <Grid item xs={3}></Grid>
+                        </Grid>
                     </>
                 )}
             </CsPaperCenter>

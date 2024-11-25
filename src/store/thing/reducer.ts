@@ -17,7 +17,7 @@ export type GeoParameters ={
     radius: string
 }
 export type Thing = {
-    geoParameters: GeoParameters,
+    geoParameters: any,
     historicalStations: HistoricalStations[],
     imageUrl: string,
     nameThing: string,

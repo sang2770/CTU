@@ -24,6 +24,7 @@ const dashboardGuest = [
                 icon: <IconInfoSquare stroke={1.5} />,
                 breadcrumbs: true,
             },
+
         ]
     },
 ]
@@ -49,22 +50,8 @@ const dashboardAdmin = [
                 icon: <IconInfoCircle stroke={1.5} />,
                 breadcrumbs: true,
             },
-            {
-                id: 'device-control',
-                title: "Điều khiển thiết bị",
-                type: 'item',
-                url: '/device-control',
-                icon: <IconDeviceMobileCog stroke={1.5} />,
-                breadcrumbs: true,
-            },
-            {
-                id: 'farm',
-                title: "Trang trại",
-                type: 'item',
-                url: '/farm',
-                icon: <IconShape stroke={1.5} />,
-                breadcrumbs: true,
-            },
+
+
             {
                 id: 'admin',
                 title: "Quản lý",
@@ -73,18 +60,34 @@ const dashboardAdmin = [
                 icon: <IconUsers stroke={1.5} />,
                 breadcrumbs: true,
                 children: [
+                    // {
+                    //     id: 'admin-farm',
+                    //     title: "Trang trại",
+                    //     type: 'item',
+                    //     url: '/farm-management',
+                    //     breadcrumbs: true,
+                    // },
+                    // {
+                    //     id: 'admin-field-pond',
+                    //     title: "Ruộng/ao",
+                    //     type: 'item',
+                    //     url: '/field-pond-management',
+                    //     breadcrumbs: true,
+                    // },
                     {
-                        id: 'admin-farm',
+                        id: 'farm',
                         title: "Trang trại",
                         type: 'item',
-                        url: '/farm-management',
+                        url: '/farm',
+                        icon: <IconShape stroke={1.5} />,
                         breadcrumbs: true,
                     },
                     {
-                        id: 'admin-field-pond',
-                        title: "Ruộng/ao",
+                        id: 'device-control',
+                        title: "Điều khiển thiết bị",
                         type: 'item',
-                        url: '/field-pond-management',
+                        url: '/device-control',
+                        icon: <IconDeviceMobileCog stroke={1.5} />,
                         breadcrumbs: true,
                     },
                     {
@@ -101,20 +104,20 @@ const dashboardAdmin = [
                         url: '/sensor-management',
                         breadcrumbs: true,
                     },
-                    {
-                        id: 'admin-device',
-                        title: "Thiết bị",
-                        type: 'item',
-                        url: '/device-management',
-                        breadcrumbs: true,
-                    },
-                    {
-                        id: 'admin-microcontroller',
-                        title: "Vi điều khiển",
-                        type: 'item',
-                        url: '/microcontroller-management',
-                        breadcrumbs: true,
-                    },
+                    // {
+                    //     id: 'admin-device',
+                    //     title: "Thiết bị",
+                    //     type: 'item',
+                    //     url: '/device-management',
+                    //     breadcrumbs: true,
+                    // },
+                    // {
+                    //     id: 'admin-microcontroller',
+                    //     title: "Vi điều khiển",
+                    //     type: 'item',
+                    //     url: '/microcontroller-management',
+                    //     breadcrumbs: true,
+                    // },
 
                 ]
             }

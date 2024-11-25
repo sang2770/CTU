@@ -14,11 +14,11 @@ function useSensor(sensorId?: number) {
         const fetchDataSensor = async () => {
             try {
                 setLoadingSensor(true)
-                setAuthApiHeader()
+                // setAuthApiHeader()
                 const response = await getAllSensors()
                 dispath(SENSOR_GET_ALL({ sensors: response?.data }))
-                console.log("sensor",response?.data);
-                
+                console.log("sensor", response?.data);
+
             } catch (error) {
                 console.error("Error fetching data:", error)
             } finally {
@@ -29,7 +29,7 @@ function useSensor(sensorId?: number) {
     }, []);
 
     const searchSensorsByName = (contentSearch: string) => {
-        if (contentSearch?.length>0) {
+        if (contentSearch?.length > 0) {
             const resultsFound = sensors?.filter(item => (item?.name?.toLowerCase()).includes(contentSearch?.toLowerCase()))
             dispath(SENSORS_GET_BY_NAME({ sensors: resultsFound }))
         }
@@ -37,7 +37,7 @@ function useSensor(sensorId?: number) {
             dispath(SENSORS_GET_BY_NAME({ sensors: sensors }))
         }
     }
-    
+
     return {
         sensors,
         filterSensors,

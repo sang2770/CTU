@@ -1,361 +1,606 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import { SelectChangeEvent } from "@mui/material";
+import useFarms from "../../../hooks/useFarms";
+import { farmApi } from "../../../services/global-axios";
+
 import {
-    Container,
-    Typography,
-    TextField,
-    Select,
-    MenuItem,
-    Button,
-    Box,
-    FormControl,
-    InputLabel,
-    SelectChangeEvent,
-    Grid,
-    InputAdornment,
-    FormHelperText
+  Container,
+  Grid,
+  Button,
+  Typography,
+  Box,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
+import { Link } from "react-router-dom";
+import DrawFarmComponent from "./FarmDraw";
+import IconButton from "@mui/material/IconButton";
 
-const FarmPage = () => {
-    const [form, setForm] = useState({
-        id: "",
-        farmName: "",
-        representative: "",
-        province: "",
-        district: "",
-        ward: "",
-        phone: "",
-        email: "",
-        regionCode: "",
-        annualCrops: "",
-        productionType: "", // Thêm trường loại hình sản xuất
-        area: "" // Thêm trường diện tích
+const FarmPage: React.FC = () => {
+  const { farms, fetchData } = useFarms();
+  console.log("Du lieu trang trại:", farms);
+
+  const [open, setOpen] = useState(false);
+  const [localFarms, setLocalFarms] = useState<any[]>([]);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [farmData, setFarmData] = useState({
+    agriAreaId: 0,
+    userId: "",
+    displayedId: "",
+    deputy: "",
+    areaName: "",
+    phone: "",
+    email: "",
+    productionUnitCode: "",
+    productionType: "",
+    cropsNumberPerYear: 0,
+    acreage: 0,
+    locationId: "",
+  });
+
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Trạng thái mở/đóng dialog
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null); // Lưu chỉ mục hoặc ID của trang trại cần xóa
+
+  const openDeleteConfirmation = (index: number) => {
+    setDeleteIndex(index); // Lưu lại index của trang trại được yêu cầu xóa
+    setOpenDeleteDialog(true); // Mở dialog
+  };
+
+  const closeDeleteConfirmation = () => {
+    setOpenDeleteDialog(false); // Đóng dialog
+    setDeleteIndex(null); // Xóa index đang lưu
+  };
+  const confirmDeleteFarm = async () => {
+    if (deleteIndex !== null) {
+      // Kiểm tra nếu có chỉ mục hợp lệ
+      try {
+        const deleteId = farms[deleteIndex].agriAreaId; // Lấy ID của trang trại
+        await axios.delete(
+          `http://103.221.220.183:8026/agri-areas/${deleteId}`
+        );
+        fetchData(); // Làm mới dữ liệu
+        closeDeleteConfirmation(); // Đóng dialog sau khi xóa
+      } catch (error) {
+        console.error("Lỗi khi xóa trang trại:", error);
+      }
+    }
+  };
+
+  const handleOpen = (index: number | null = null) => {
+    setOpen(true);
+
+    if (index !== null && index >= 0 && index < farms.length) {
+      setFarmData(farms[index]); // Điền dữ liệu trang trại vào form để chỉnh sửa
+      setEditIndex(index); // Đánh dấu trạng thái chỉnh sửa
+    } else {
+      resetFarmsData(); // Reset form cho thêm mới
+      setEditIndex(null); // Đặt trạng thái về thêm mới
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const resetFarmsData = () => {
+    setFarmData({
+      agriAreaId: 0,
+      userId: "",
+      displayedId: "",
+      deputy: "",
+      areaName: "",
+      phone: "",
+      email: "",
+      productionUnitCode: "",
+      productionType: "",
+      cropsNumberPerYear: 0,
+      acreage: 0,
+      locationId: "",
     });
-
-    const [cities, setCities] = useState<any[]>([]);
-    const [districts, setDistricts] = useState<any[]>([]);
-    const [wards, setWards] = useState<any[]>([]);
-    const [errors, setErrors] = useState<any>({});
-
-    useEffect(() => {
-        const fetchLocationData = async () => {
-            try {
-                const response = await axios.get("https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json");
-                setCities(response.data);
-            } catch (error) {
-                console.error("Error fetching location data:", error);
-            }
-        };
-
-        fetchLocationData();
-    }, []);
-
-    useEffect(() => {
-        if (form.province) {
-            const selectedCity = cities.find(city => city.Id === form.province);
-            setDistricts(selectedCity ? selectedCity.Districts : []);
-            setWards([]);
+  };
+  const setAuthApiHeader = (apiInstance) => {
+    apiInstance.interceptors.request.use(
+      (config) => {
+        const accessToken = JSON.parse(
+          localStorage.getItem("_authenticatedUser")
+        )?.accessToken;
+        if (accessToken) {
+          config.headers["Authorization"] = `Bearer ${accessToken}`;
         }
-    }, [form.province, cities]);
-
-    useEffect(() => {
-        if (form.district) {
-            const selectedCity = cities.find(city => city.Id === form.province);
-            const selectedDistrict = selectedCity ? selectedCity.Districts.find(district => district.Id === form.district) : null;
-            setWards(selectedDistrict ? selectedDistrict.Wards : []);
-        }
-    }, [form.district, form.province, cities]);
-
-    const validateForm = () => {
-        const newErrors: any = {};
-        if (!form.id) newErrors.id = "ID là bắt buộc.";
-        if (!form.farmName) newErrors.farmName = "Tên trang trại là bắt buộc.";
-        if (!form.representative) newErrors.representative = "Người đại diện là bắt buộc.";
-        if (!form.phone) newErrors.phone = "Điện thoại là bắt buộc.";
-        else if (form.phone.length !== 10) newErrors.phone = "Số điện thoại phải có 10 chữ số.";
-        if (!form.email) newErrors.email = "Email là bắt buộc.";
-        else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = "Email không hợp lệ.";
-        if (!form.province) newErrors.province = "Tỉnh/Thành phố là bắt buộc.";
-        if (!form.district) newErrors.district = "Quận/Huyện là bắt buộc.";
-        if (!form.ward) newErrors.ward = "Xã/Phường là bắt buộc.";
-        if (!form.regionCode) newErrors.regionCode = "Mã vùng trồng là bắt buộc.";
-        if (!form.productionType) newErrors.productionType = "Loại hình sản xuất là bắt buộc.";
-        if (!form.area) newErrors.area = "Diện tích là bắt buộc.";
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (validateForm()) {
-            console.log(form);
-            // Thực hiện gửi form
-        }
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleSelectChange = (event: SelectChangeEvent<string>) => {
-        setForm({
-            ...form,
-            [event.target.name]: event.target.value
-        });
-    };
-
-    return (
-        <Container maxWidth="md">
-            <Box display="flex" justifyContent="center" mb={4}>
-                <Typography variant="h2" component="h1">
-                    Quản lý Trang Trại
-                </Typography>
-            </Box>
-            <form onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors.id}>
-                            <TextField
-                                label="ID"
-                                name="id"
-                                value={form.id}
-                                onChange={handleInputChange}
-                                required
-                                variant="outlined"
-                            />
-                            {errors.id && <FormHelperText>{errors.id}</FormHelperText>}
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors.farmName}>
-                            <TextField
-                                label="Tên Trang Trại"
-                                name="farmName"
-                                value={form.farmName}
-                                onChange={handleInputChange}
-                                required
-                                variant="outlined"
-                            />
-                            {errors.farmName && <FormHelperText>{errors.farmName}</FormHelperText>}
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors.representative}>
-                            <TextField
-                                label="Người Đại Diện"
-                                name="representative"
-                                value={form.representative}
-                                onChange={handleInputChange}
-                                required
-                                variant="outlined"
-                            />
-                            {errors.representative && <FormHelperText>{errors.representative}</FormHelperText>}
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors.phone}>
-                            <TextField
-                                label="Điện Thoại"
-                                name="phone"
-                                value={form.phone}
-                                onChange={handleInputChange}
-                                required
-                                type="tel"
-                                variant="outlined"
-                            />
-                            {errors.phone && <FormHelperText>{errors.phone}</FormHelperText>}
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors.email}>
-                            <TextField
-                                label="Email"
-                                name="email"
-                                value={form.email}
-                                onChange={handleInputChange}
-                                required
-                                type="email"
-                                variant="outlined"
-                            />
-                            {errors.email && <FormHelperText>{errors.email}</FormHelperText>}
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors.regionCode}>
-                            <TextField
-                                label="Mã Vùng Trồng"
-                                name="regionCode"
-                                value={form.regionCode}
-                                onChange={handleInputChange}
-                                required
-                                variant="outlined"
-                            />
-                            {errors.regionCode && <FormHelperText>{errors.regionCode}</FormHelperText>}
-                        </FormControl>
-                    </Grid>
-                    {/* <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors.productionType}>
-                            <TextField
-                                label="Loại Hình Sản Xuất"
-                                name="productionType"
-                                value={form.productionType}
-                                onChange={handleInputChange}
-                                required
-                                variant="outlined"
-                            />
-                            {errors.productionType && <FormHelperText>{errors.productionType}</FormHelperText>}
-                        </FormControl>
-                    </Grid> */}
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors.productionType}>
-                            <InputLabel>Loại Hình Sản Xuất</InputLabel>
-                            <Select
-                                label="Loại Hình Sản Xuất"
-                                name="productionType"
-                                value={form.productionType}
-                                onChange={handleSelectChange}
-                                required
-                                variant="outlined"
-                            >
-                                <MenuItem value="Chọn sau">Chọn sau</MenuItem>
-                                <MenuItem value="Trồng Lúa">Trồng Lúa</MenuItem>
-                                <MenuItem value="Nuôi thủy sản">Nuôi thủy sản</MenuItem>
-                                <MenuItem value="Trồng lúa và Nuôi thủy sản">Trồng lúa và Nuôi thủy sản</MenuItem>
-                            </Select>
-                            {errors.productionType && <FormHelperText>{errors.productionType}</FormHelperText>}
-                        </FormControl>
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
-                            <TextField
-                                label="Số Vụ Canh Tác Trong Năm"
-                                name="annualCrops"
-                                value={form.annualCrops}
-                                onChange={handleInputChange}
-                                required
-                                type="number"
-                                variant="outlined"
-                            />
-                        </FormControl>
-                    </Grid>
-                    {/* Thêm loại hình sản xuất và diện tích */}
-
-                    {/* <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors.area}>
-                            <TextField
-                                label="Diện Tích"
-                                name="area"
-                                value={form.area}
-                                onChange={handleInputChange}
-                                required
-                                type="number"
-                                variant="outlined"
-                            />
-                            {errors.area && <FormHelperText>{errors.area}</FormHelperText>}
-                        </FormControl>
-                    </Grid> */}
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors.area}>
-                            <TextField
-                                label="Diện Tích"
-                                name="area"
-                                value={form.area}
-                                onChange={handleInputChange}
-                                required
-                                type="number"
-                                variant="outlined"
-                                InputProps={{
-                                    endAdornment: <InputAdornment position="end">m²</InputAdornment>,
-                                    inputProps: { min: 0 }, // Ngăn người dùng nhập giá trị âm, không có tăng giảm
-                                }}
-                            />
-                            {errors.area && <FormHelperText>{errors.area}</FormHelperText>}
-                        </FormControl>
-                    </Grid>
-
-
-                    {/* Đặt các trường địa chỉ trên một dòng */}
-                    <Grid item xs={12}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12} sm={4}>
-                                <FormControl fullWidth error={!!errors.province}>
-                                    <InputLabel>Tỉnh/Thành Phố</InputLabel>
-                                    <Select
-                                        name="province"
-                                        value={form.province}
-                                        onChange={handleSelectChange}
-                                        required
-                                        variant="outlined"
-                                    >
-                                        <MenuItem value="">Chọn Tỉnh/Thành Phố</MenuItem>
-                                        {cities.map(city => (
-                                            <MenuItem key={city.Id} value={city.Id}>
-                                                {city.Name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {errors.province && <FormHelperText>{errors.province}</FormHelperText>}
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <FormControl fullWidth error={!!errors.district}>
-                                    <InputLabel>Quận/Huyện</InputLabel>
-                                    <Select
-                                        name="district"
-                                        value={form.district}
-                                        onChange={handleSelectChange}
-                                        required
-                                        variant="outlined"
-                                    >
-                                        <MenuItem value="">Chọn Quận/Huyện</MenuItem>
-                                        {districts.map(district => (
-                                            <MenuItem key={district.Id} value={district.Id}>
-                                                {district.Name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {errors.district && <FormHelperText>{errors.district}</FormHelperText>}
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <FormControl fullWidth error={!!errors.ward}>
-                                    <InputLabel>Xã/Phường</InputLabel>
-                                    <Select
-                                        name="ward"
-                                        value={form.ward}
-                                        onChange={handleSelectChange}
-                                        required
-                                        variant="outlined"
-                                    >
-                                        <MenuItem value="">Chọn Xã/Phường</MenuItem>
-                                        {wards.map(ward => (
-                                            <MenuItem key={ward.Id} value={ward.Id}>
-                                                {ward.Name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    {errors.ward && <FormHelperText>{errors.ward}</FormHelperText>}
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Box mt={4} display="flex" justifyContent="space-between">
-                    <Button variant="contained" color="primary" type="submit">
-                        Lưu Thông Tin
-                    </Button>
-                    <Button variant="contained" color="primary" href="/farm/pond">
-                        Quản Lý Ao Nuôi
-                    </Button>
-                </Box>
-            </form>
-        </Container>
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
     );
+  };
+  setAuthApiHeader(farmApi);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFarmData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setFarmData({
+            ...farmData,
+            locationId: `Lat: ${latitude}, Lng: ${longitude}`,
+          });
+        },
+        (error) => {
+          console.error("Error obtaining location:", error);
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  };
+
+  //delete farm
+  // const deleteFarm = async (deleteId) => {
+  //     try {
+  //         await axios.delete(`http://103.221.220.183:8026/agri-areas/${deleteId}`);
+  //         fetchData();
+
+  //     } catch (error) {
+  //         console.error("Lỗi khi xóa ao:", error);
+  //     }
+  // };
+  //add and edit => save farm
+  const saveFarm = async () => {
+    if (!validateForm()) return; // Dừng nếu form không hợp lệ
+
+    try {
+      const data = {
+        userId: farmData.userId,
+        displayedId: farmData.displayedId,
+        deputy: farmData.deputy,
+        areaName: farmData.areaName,
+        phone: farmData.phone,
+        email: farmData.email,
+        productionUnitCode: farmData.productionUnitCode,
+        productionType: farmData.productionType,
+        cropsNumberPerYear: farmData.cropsNumberPerYear,
+        acreage: farmData.acreage,
+        locationId: farmData.locationId,
+      };
+
+      if (editIndex !== null) {
+        const agriAreaId = farms[editIndex].agriAreaId;
+        await farmApi.patch(
+          `http://103.221.220.183:8026/agri-areas/${agriAreaId}`,
+          data
+        );
+        console.log("Cập nhật trang trại thành công");
+      } else {
+        await farmApi.post(`http://103.221.220.183:8026/agri-areas/`, data);
+        console.log("Thêm trang trại thành công");
+      }
+
+      fetchData();
+      handleClose();
+    } catch (error) {
+      console.error("Lỗi khi lưu thông tin trang trại:", error);
+    }
+  };
+
+  //rang buoc phone
+  const validatePhone = (phone: string): boolean => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone);
+  };
+  //rang buoc dinh dang email
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  //kiem tra loi truoc khi goi ham o giao dien
+  const [errors, setErrors] = useState({
+    phone: "",
+    email: "",
+    cropsNumberPerYear: "",
+  });
+
+  const validateForm = (): boolean => {
+    let isValid = true;
+    let newErrors = {
+      phone: "",
+      email: "",
+      cropsNumberPerYear: "",
+      acreage: "",
+    };
+
+    // Kiểm tra số điện thoại có đúng 10 chữ số không
+    if (!validatePhone(farmData.phone)) {
+      newErrors.phone = "Số điện thoại phải đúng 10 chữ số.";
+      isValid = false;
+    }
+
+    // Kiểm tra định dạng email
+    if (!validateEmail(farmData.email)) {
+      newErrors.email = "Email không đúng định dạng.";
+      isValid = false;
+    }
+
+    // Kiểm tra số vụ canh tác không được âm
+    if (farmData.cropsNumberPerYear < 0) {
+      newErrors.cropsNumberPerYear = "Số vụ canh tác không được âm.";
+      isValid = false;
+    }
+
+    // Kiểm tra diện tích không được âm
+    if (farmData.acreage < 0) {
+      newErrors.acreage = "Diện tích không được âm.";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+  const [fieldErrors, setFieldErrors] = useState({
+    userId: "",
+    displayedId: "",
+    deputy: "",
+    areaName: "",
+    phone: "",
+    email: "",
+    productionUnitCode: "",
+    cropsNumberPerYear: "",
+    acreage: "",
+    locationId: "",
+  });
+  const validateField = (fieldName: string, value: string | number): string => {
+    switch (fieldName) {
+      case "phone":
+        return validatePhone(value as string)
+          ? ""
+          : "Số điện thoại phải đúng 10 chữ số.";
+      case "email":
+        return validateEmail(value as string)
+          ? ""
+          : "Email không đúng định dạng.";
+      case "cropsNumberPerYear":
+        return Number(value) >= 0 ? "" : "Số vụ canh tác không được âm.";
+      case "acreage":
+        return Number(value) >= 0 ? "" : "Diện tích không được âm.";
+      case "userId":
+      case "displayedId":
+      case "deputy":
+      case "areaName":
+      case "productionUnitCode":
+        return value ? "" : "Trường này không được để trống.";
+      default:
+        return "";
+    }
+  };
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+    setFieldErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
+  };
+
+  //map
+  const [drawModalOpen, setDrawModalOpen] = useState(false);
+
+  // Hàm để mở đóng modal vẽ trang trại
+  const handleOpenDrawModal = () => {
+    console.log("Mở modal vẽ trang trại");
+    setDrawModalOpen(true);
+  };
+
+  const handleCloseDrawModal = () => {
+    setDrawModalOpen(false);
+    resetFarmsData();
+  };
+  const handleDrawFarm = (index: number) => {
+    if (index !== null && index >= 0 && index < farms.length) {
+        setFarmData(farms[index]);
+    }
+    handleOpenDrawModal();
+  };
+
+  return (
+    <Container>
+      <Box display="flex" justifyContent="flex-end" mb={3}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleOpen()}
+        >
+          ➕ Thêm trang trại nuôi
+        </Button>
+      </Box>
+
+      {/* hien thi farm */}
+      <Grid container spacing={3}>
+        {farms?.map((localFarms, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Box
+              sx={{
+                border: "1px solid #ddd",
+                borderRadius: "10px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            ></Box>
+
+            {localFarms.areaName && (
+              <>
+                <Link to={`/farm/${localFarms.agriAreaId}/thing`}>
+                  <img
+                    src="https://www.thiennhien.net/wp-content/uploads/2022/01/1201_thuysan.jpg"
+                    alt={localFarms.areaName}
+                    style={{
+                      width: "100%",
+                      height: "200px",
+                      objectFit: "cover",
+                      borderRadius: "10px",
+                    }}
+                  />
+                </Link>
+                <Typography variant="body2">
+                  Tên trang trại: {localFarms.areaName}
+                </Typography>
+                <Typography variant="body2">
+                  Người đại diện quản lý: {localFarms.deputy}
+                </Typography>
+              </>
+            )}
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+                mt: 1,
+              }}
+            >
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => handleOpen(index)}
+                sx={{ mr: 1 }}
+              >
+                Chỉnh sửa
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => openDeleteConfirmation(index)} // Mở dialog xác nhận
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "red",
+                    color: "white",
+                  },
+                }}
+              >
+                Xóa
+              </Button>
+              {/* Nút Vẽ trang trại */}
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => handleDrawFarm(index)} // Mở form vẽ trang trại
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "blue",
+                    color: "white",
+                  },
+                }}
+              >
+                Vẽ trang trại
+              </Button>
+            </Box>
+          </Grid>
+        ))}
+        {/* Form them trang trai moi */}
+        <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+          <DialogTitle>
+            {editIndex !== null ? "Chỉnh sửa Trang trại" : "Thêm trang trại"}
+          </DialogTitle>
+
+          <DialogContent>
+            <TextField
+              label="User ID"
+              fullWidth
+              margin="normal"
+              name="userId"
+              value={farmData.userId}
+              onChange={handleChange}
+            />
+            <TextField
+              label="Mã ID hiển thị"
+              fullWidth
+              margin="normal"
+              name="displayedId"
+              value={farmData.displayedId}
+              onChange={handleChange}
+            />
+            <TextField
+              label="Người quản lý trang trại nuôi"
+              fullWidth
+              margin="normal"
+              name="deputy"
+              value={farmData.deputy}
+              onChange={handleChange}
+            />
+            <TextField
+              label="Tên khu vực của trang trại nuôi"
+              fullWidth
+              margin="normal"
+              name="areaName"
+              value={farmData.areaName}
+              onChange={handleChange}
+            />
+            <TextField
+              label="Số điện thoại"
+              fullWidth
+              margin="normal"
+              name="phone"
+              value={farmData.phone}
+              onChange={handleChange}
+              onBlur={handleBlur} // Thêm sự kiện này
+              error={!!fieldErrors.phone} // Đánh dấu trường có lỗi
+              helperText={fieldErrors.phone} // Hiển thị thông báo lỗi
+            />
+
+            <TextField
+              label="Địa chỉ Email người quản lý trang trại"
+              fullWidth
+              margin="normal"
+              name="email"
+              value={farmData.email}
+              onChange={handleChange}
+              onBlur={handleBlur} // Thêm sự kiện này
+              error={!!fieldErrors.email} // Đánh dấu trường có lỗi
+              helperText={fieldErrors.email} // Hiển thị thông báo lỗi
+            />
+            <TextField
+              label="Mã đơn vị sản xuất"
+              fullWidth
+              margin="normal"
+              name="productionUnitCode"
+              value={farmData.productionUnitCode}
+              onChange={handleChange}
+            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Loại hình sản xuất</InputLabel>
+              <Select
+                name="productionType"
+                value={farmData.productionType}
+                onChange={(e: SelectChangeEvent) =>
+                  setFarmData({ ...farmData, productionType: e.target.value })
+                }
+              >
+                <MenuItem value="Trồng lúa">Trồng lúa</MenuItem>
+                <MenuItem value="Nuôi thủy sản">Nuôi thủy sản</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              label="Số vụ canh tác mỗi năm"
+              fullWidth
+              margin="normal"
+              name="cropsNumberPerYear"
+              type="number"
+              value={farmData.cropsNumberPerYear || ""}
+              onChange={handleChange}
+              onBlur={handleBlur} // Thêm sự kiện này
+              error={!!fieldErrors.cropsNumberPerYear}
+              helperText={fieldErrors.cropsNumberPerYear}
+            />
+
+            <TextField
+              label="Diện tích trang trại nuôi (m2)"
+              fullWidth
+              margin="normal"
+              name="acreage"
+              type="number"
+              value={farmData.acreage || ""}
+              onChange={handleChange}
+              onBlur={handleBlur} // Thêm sự kiện này
+              error={!!fieldErrors.acreage}
+              helperText={fieldErrors.acreage}
+            />
+            <Box marginTop={2}>
+              <Typography variant="body2">Tọa độ trang trại nuôi:</Typography>
+              <TextField
+                fullWidth
+                margin="normal"
+                name="locationId"
+                value={farmData.locationId}
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+              <Button variant="outlined" onClick={getLocation}>
+                Lấy tọa độ
+              </Button>
+            </Box>
+          </DialogContent>
+
+          <DialogActions sx={{ justifyContent: "space-between" }}>
+            <Button onClick={handleClose} color="secondary">
+              Hủy
+            </Button>
+            <Button variant="contained" color="primary" onClick={saveFarm}>
+              {editIndex !== null ? "Cập nhật" : "Thêm"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {/* Xac nhan delteFarm */}
+        <Dialog
+          open={openDeleteDialog} // Hiển thị dựa vào trạng thái
+          onClose={closeDeleteConfirmation} // Đóng dialog
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Xác nhận xóa trang trại nuôi</DialogTitle>
+          <DialogContent>
+            <Typography>
+              Bạn có chắc chắn muốn xóa trang trại này không?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeDeleteConfirmation} color="secondary">
+              Hủy
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={confirmDeleteFarm}
+            >
+              Xóa
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={drawModalOpen}
+          onClose={handleCloseDrawModal}
+          maxWidth="md"
+          fullWidth
+        >
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseDrawModal}
+            sx={(theme) => ({
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: theme.palette.grey[500],
+            })}
+          >
+            <img src="icons/close.svg" alt="close"  style={{width: 20, height: 20}}/>
+          </IconButton>
+          <DialogTitle>Vẽ Trang Trại</DialogTitle>
+          <DialogContent>
+            <DrawFarmComponent id = {farmData?.agriAreaId}/>
+          </DialogContent>
+        </Dialog>
+      </Grid>
+    </Container>
+  );
 };
 
 export default FarmPage;
